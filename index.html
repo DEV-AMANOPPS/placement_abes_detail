@@ -1,0 +1,1495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ABES Placement Prep 2025 — Aman's Battle Plan</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --card: #16161f;
+    --border: #1e1e2e;
+    --accent: #7c3aed;
+    --accent2: #06b6d4;
+    --accent3: #f59e0b;
+    --accent4: #10b981;
+    --danger: #ef4444;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --highlight: #c4b5fd;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(124,58,237,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(124,58,237,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+
+  /* Header */
+  header {
+    padding: 60px 0 40px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(124,58,237,0.15);
+    border: 1px solid rgba(124,58,237,0.3);
+    color: var(--highlight);
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    padding: 4px 12px;
+    border-radius: 100px;
+    margin-bottom: 20px;
+  }
+
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 800;
+    line-height: 1.1;
+    background: linear-gradient(135deg, #fff 0%, var(--highlight) 50%, var(--accent2) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 16px;
+  }
+
+  header p {
+    color: var(--muted);
+    font-size: 1rem;
+    max-width: 600px;
+    line-height: 1.6;
+  }
+
+  /* Stats bar */
+  .stats-bar {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin: 32px 0;
+    overflow: hidden;
+  }
+
+  .stat {
+    background: var(--surface);
+    padding: 20px;
+    text-align: center;
+  }
+
+  .stat .num {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--highlight);
+    display: block;
+  }
+
+  .stat .label {
+    font-size: 0.7rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 4px;
+  }
+
+  /* Nav tabs */
+  .tabs {
+    display: flex;
+    gap: 4px;
+    background: var(--surface);
+    padding: 6px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+  }
+
+  .tab-btn {
+    flex: 1;
+    min-width: 100px;
+    padding: 10px 16px;
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .tab-btn.active {
+    background: var(--accent);
+    color: white;
+  }
+
+  .tab-btn:hover:not(.active) {
+    background: var(--border);
+    color: var(--text);
+  }
+
+  /* Sections */
+  .section { display: none; }
+  .section.active { display: block; animation: fadeIn 0.3s ease; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-title .icon { font-size: 1.2rem; }
+
+  /* Company cards */
+  .company-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+
+  .company-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+    transition: border-color 0.2s, transform 0.2s;
+    cursor: pointer;
+  }
+
+  .company-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+  }
+
+  .company-card.dream { border-left: 3px solid var(--accent3); }
+  .company-card.mass { border-left: 3px solid var(--accent4); }
+  .company-card.super { border-left: 3px solid var(--accent); }
+
+  .company-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+  }
+
+  .company-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+  }
+
+  .package-badge {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-weight: 700;
+  }
+
+  .badge-gold { background: rgba(245,158,11,0.15); color: var(--accent3); border: 1px solid rgba(245,158,11,0.3); }
+  .badge-green { background: rgba(16,185,129,0.15); color: var(--accent4); border: 1px solid rgba(16,185,129,0.3); }
+  .badge-purple { background: rgba(124,58,237,0.15); color: var(--highlight); border: 1px solid rgba(124,58,237,0.3); }
+
+  .company-tag {
+    font-size: 0.72rem;
+    color: var(--muted);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 2px 8px;
+    border-radius: 4px;
+    display: inline-block;
+    margin-right: 4px;
+    margin-bottom: 4px;
+  }
+
+  .rounds-list {
+    margin-top: 12px;
+  }
+
+  .round-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.82rem;
+    line-height: 1.5;
+  }
+
+  .round-item:last-child { border-bottom: none; }
+
+  .round-num {
+    background: var(--accent);
+    color: white;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.65rem;
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  /* Topic cards */
+  .topic-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+  }
+
+  .topic-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+  }
+
+  .topic-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .topic-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+
+  .topic-name {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+  }
+
+  .topic-sub {
+    font-size: 0.72rem;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .subtopic-list {
+    list-style: none;
+  }
+
+  .subtopic-list li {
+    font-size: 0.8rem;
+    color: var(--muted);
+    padding: 5px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .subtopic-list li::before {
+    content: '→';
+    color: var(--accent2);
+    font-size: 0.7rem;
+    flex-shrink: 0;
+  }
+
+  .subtopic-list li:last-child { border-bottom: none; }
+
+  /* Priority indicator */
+  .priority {
+    font-size: 0.65rem;
+    margin-left: auto;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+
+  .p-high { background: rgba(239,68,68,0.15); color: #f87171; }
+  .p-med { background: rgba(245,158,11,0.15); color: #fbbf24; }
+  .p-low { background: rgba(16,185,129,0.15); color: #34d399; }
+
+  /* Roadmap timeline */
+  .timeline {
+    position: relative;
+    padding-left: 32px;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 10px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--accent), var(--accent2));
+  }
+
+  .timeline-item {
+    position: relative;
+    margin-bottom: 28px;
+  }
+
+  .timeline-dot {
+    position: absolute;
+    left: -26px;
+    top: 4px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 2px solid var(--accent);
+    background: var(--bg);
+  }
+
+  .timeline-week {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--accent2);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+  }
+
+  .timeline-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    margin-bottom: 8px;
+  }
+
+  .timeline-tasks {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .timeline-tasks li {
+    font-size: 0.78rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 4px 10px;
+    border-radius: 6px;
+    color: var(--muted);
+  }
+
+  /* Resources section */
+  .resources-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+  }
+
+  .resource-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+  }
+
+  .resource-platform {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--accent2);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+  }
+
+  .resource-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .resource-desc {
+    font-size: 0.8rem;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  /* Progress tracker */
+  .tracker-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .tracker-item {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+  }
+
+  .tracker-label {
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .progress-bar {
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.8s ease;
+  }
+
+  /* Checklist */
+  .checklist {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+
+  .checklist h3 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    margin-bottom: 14px;
+    font-size: 1rem;
+  }
+
+  .check-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+  }
+
+  .check-item:last-child { border-bottom: none; }
+
+  .check-box {
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--muted);
+    border-radius: 4px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    margin-top: 1px;
+  }
+
+  .check-box.checked {
+    background: var(--accent4);
+    border-color: var(--accent4);
+  }
+
+  .check-box.checked::after { content: '✓'; color: white; font-size: 11px; font-weight: 700; }
+
+  .check-text { font-size: 0.83rem; line-height: 1.5; }
+  .check-text.done { text-decoration: line-through; color: var(--muted); }
+
+  /* Divider */
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 32px 0;
+  }
+
+  /* Eligibility warning */
+  .warning-box {
+    background: rgba(245,158,11,0.08);
+    border: 1px solid rgba(245,158,11,0.25);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    font-size: 0.85rem;
+    line-height: 1.6;
+  }
+
+  .warning-box strong { color: var(--accent3); }
+
+  .info-box {
+    background: rgba(6,182,212,0.06);
+    border: 1px solid rgba(6,182,212,0.2);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    font-size: 0.85rem;
+    line-height: 1.6;
+  }
+
+  .info-box strong { color: var(--accent2); }
+
+  /* Accordion */
+  .accordion { margin-bottom: 20px; }
+
+  .accordion-item {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 8px;
+    overflow: hidden;
+  }
+
+  .accordion-header {
+    padding: 16px 20px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+
+  .accordion-header:hover { background: rgba(255,255,255,0.02); }
+
+  .accordion-arrow {
+    color: var(--muted);
+    transition: transform 0.2s;
+    font-size: 0.8rem;
+  }
+
+  .accordion-item.open .accordion-arrow { transform: rotate(180deg); }
+
+  .accordion-body {
+    display: none;
+    padding: 0 20px 16px;
+    font-size: 0.83rem;
+    color: var(--muted);
+    line-height: 1.7;
+    border-top: 1px solid var(--border);
+    padding-top: 16px;
+  }
+
+  .accordion-item.open .accordion-body { display: block; }
+
+  /* Code block */
+  .code-snippet {
+    background: #0d0d14;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    color: #a5f3fc;
+    margin-top: 10px;
+    overflow-x: auto;
+    line-height: 1.6;
+  }
+
+  footer {
+    padding: 40px 0;
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.78rem;
+    border-top: 1px solid var(--border);
+    margin-top: 40px;
+    font-family: 'Space Mono', monospace;
+  }
+
+  @media (max-width: 600px) {
+    .stats-bar { grid-template-columns: repeat(2, 1fr); }
+    .tabs { flex-direction: column; }
+    .tab-btn { flex: none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <div class="badge">⚡ ABES Engineering College · Ghaziabad · 2025 Batch</div>
+    <h1>Placement Battle Plan</h1>
+    <p>Har ek company ka interview process, topics, aur roadmap — sab kuch ek jagah. Target: 8–10 LPA offers crack karna.</p>
+
+    <div class="stats-bar">
+      <div class="stat">
+        <span class="num">560+</span>
+        <span class="label">Companies Visit</span>
+      </div>
+      <div class="stat">
+        <span class="num">93%</span>
+        <span class="label">Placement Rate</span>
+      </div>
+      <div class="stat">
+        <span class="num">204</span>
+        <span class="label">7–10 LPA Offers</span>
+      </div>
+      <div class="stat">
+        <span class="num">₹59.9L</span>
+        <span class="label">Highest Package</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="container" style="padding-top: 32px; padding-bottom: 60px;">
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showTab('companies')">🏢 Companies</button>
+    <button class="tab-btn" onclick="showTab('topics')">📚 Topics</button>
+    <button class="tab-btn" onclick="showTab('roadmap')">🗓 Roadmap</button>
+    <button class="tab-btn" onclick="showTab('checklist')">✅ Checklist</button>
+    <button class="tab-btn" onclick="showTab('resources')">🔗 Resources</button>
+  </div>
+
+  <!-- COMPANIES TAB -->
+  <div id="tab-companies" class="section active">
+    <div class="warning-box">
+      <strong>⚠️ Eligibility Filter (Most Companies):</strong> Minimum 60% in 10th, 12th, and graduation. No active backlogs. CGPA ≥ 6.0. Agar yeh conditions meet nahi hoti, pehle yeh fix karo.
+    </div>
+
+    <div class="section-title"><span class="icon">🏆</span> Dream Companies — 8 to 15 LPA (ABES mein aate hain)</div>
+
+    <div class="company-grid">
+      <div class="company-card dream">
+        <div class="company-header">
+          <div class="company-name">Cisco India</div>
+          <span class="package-badge badge-gold">8–12 LPA</span>
+        </div>
+        <span class="company-tag">Networking</span>
+        <span class="company-tag">Software</span>
+        <span class="company-tag">ABES Regular</span>
+        <div class="rounds-list">
+          <div class="round-item"><div class="round-num">1</div><div>MCQ Test: 50Q — 20 Aptitude + 15 CS/Networking (DS, Algo, C) + 15 Electronics</div></div>
+          <div class="round-item"><div class="round-num">2</div><div>Tech Interview: DSA, OS, Networks, DBMS in depth. Networking concepts bahut important.</div></div>
+          <div class="round-item"><div class="round-num">3</div><div>Hiring Manager Round: Projects, team conflicts, future plans</div></div>
+          <div class="round-item"><div class="round-num">4</div><div>HR Round: Culture fit, communication, resume walkthrough</div></div>
+        </div>
+        <div style="margin-top: 12px; font-size: 0.75rem; color: var(--accent3);">🔥 Focus: Networking (OSI, TCP/IP, routing), C/C++, DSA, DBMS</div>
+      </div>
+
+      <div class="company-card dream">
+        <div class="company-header">
+          <div class="company-name">Synopsys</div>
+          <span class="package-badge badge-gold">8–14 LPA</span>
+        </div>
+        <span class="company-tag">EDA</span>
+        <span class="company-tag">Semiconductor</span>
+        <span class="company-tag">ABES Top Recruiter</span>
+        <div class="rounds-list">
+          <div class="round-item"><div class="round-num">1</div><div>Online Test: C/C++ programming, DSA, digital logic, puzzles</div></div>
+          <div class="round-item"><div class="round-num">2</div><div>Tech Interview: OOPs, pointers, memory management, data structures</div></div>
+          <div class="round-item"><div class="round-num">3</div><div>Tech Interview 2: Project deep-dive, problem solving, algorithms</div></div>
+          <div class="round-item"><div class="round-num">4</div><div>HR Round</div></div>
+        </div>
+        <div style="margin-top: 12px; font-size: 0.75rem; color: var(--accent3);">🔥 Focus: C/C++ strong grip, OOPs, Digital Electronics, DSA</div>
+      </div>
+
+      <div class="company-card dream">
+        <div class="company-header">
+          <div class="company-name">Goldman Sachs</div>
+          <span class="package-badge badge-gold">10–15 LPA</span>
+        </div>
+        <span class="company-tag">Finance-Tech</span>
+        <span class="company-tag">DSA Heavy</span>
+        <div class="rounds-list">
+          <div class="round-item"><div class="round-num">1</div><div>Online Coding: 2–3 DSA questions on HackerRank. Medium-Hard level. Time & space complexity poochhi jaati hai.</div></div>
+          <div class="round-item"><div class="round-num">2</div><div>Tech Round 1: DSA questions + SQL queries</div></div>
+          <div class="round-item"><div class="round-num">3</div><div>Tech Round 2: DSA + Puzzles (famous brain teasers) + approach discussion</div></div>
+          <div class="round-item"><div class="round-num">4</div><div>HR: Hobbies, projects, behavioural</div></div>
+        </div>
+        <div style="margin-top: 12px; font-size: 0.75rem; color: var(--accent3);">🔥 Focus: LeetCode Medium+, SQL, Puzzle prep (trains, frogs, etc.)</div>
+      </div>
+
+      <div class="company-card dream">
+        <div class="company-header">
+          <div class="company-name">GroundTruth</div>
+          <span class="package-badge badge-gold">8–10 LPA</span>
+        </div>
+        <span class="company-tag">AdTech</span>
+        <span class="company-tag">ABES Regular</span>
+        <div class="rounds-list">
+          <div class="round-item"><div class="round-num">1</div><div>Coding Round: DSA problems, mostly Easy-Medium level</div></div>
+          <div class="round-item"><div class="round-num">2</div><div>Tech Interview: OOPs, DSA concepts, project discussion</div></div>
+          <div class="round-item"><div class="round-num">3</div><div>HR Round</div></div>
+        </div>
+        <div style="margin-top: 12px; font-size: 0.75rem; color: var(--accent3);">🔥 Focus: DSA basics, OOPs, strong projects</div>
+      </div>
+
+      <div class="company-card dream">
+        <div class="company-header">
+          <div class="company-name">Capgemini Exceller</div>
+          <span class="package-badge badge-gold">7.5 LPA</span>
+        </div>
+        <span class="company-tag">IT Services</span>
+        <span class="company-tag">Special Track</span>
+        <div class="rounds-list">
+          <div class="round-item"><div class="round-num">1</div><div>Cognitive Ability + Pseudocode + Essay Writing + Communication Test + Behavioral Games</div></div>
+          <div class="round-item"><div class="round-num">2</div><div>Coding: 2 problems in 45 mins — Solve 1 = 5.75 LPA, Solve 2 = 7.5 LPA</div></div>
+          <div class="round-item"><div class="round-num">3</div><div>Spoken English + HR</div></div>
+        </div>
+        <div style="margin-top: 12px; font-size: 0.75rem; color: var(--accent3);">🔥 Focus: Pseudocode, string problems, English fluency</div>
+      </div>
+
+      <div class="company-card dream">
+        <div class="company-header">
+          <div class="company-name">HSBC / NTT Data</div>
+          <span class="package-badge badge-gold">7–9 LPA</span>
+        </div>
+        <span class="company-tag">Finance/IT</span>
+        <span class="company-tag">ABES Recruiter</span>
+        <div class="rounds-list">
+          <div class="round-item"><div class="round-num">1</div><div>Aptitude Test: Quant, Logical, Verbal</div></div>
+          <div class="round-item"><div class="round-num">2</div><div>Technical: DBMS, SQL, OS, basic coding, core CS</div></div>
+          <div class="round-item"><div class="round-num">3</div><div>HR Round</div></div>
+        </div>
+        <div style="margin-top: 12px; font-size: 0.75rem; color: var(--accent3);">🔥 Focus: SQL, DBMS, core CS fundamentals</div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+    <div class="section-title"><span class="icon">🌊</span> Mass Recruiters — 4–6 LPA (Backup + Volume)</div>
+
+    <div class="company-grid">
+      <div class="company-card mass">
+        <div class="company-header">
+          <div class="company-name">TCS (NQT)</div>
+          <span class="package-badge badge-green">3.5–7 LPA</span>
+        </div>
+        <span class="company-tag">IT Giant</span>
+        <span class="company-tag">Mass Recruiter</span>
+        <div class="rounds-list">
+          <div class="round-item"><div class="round-num">1</div><div>NQT: Quant (20Q) + Verbal (25Q) + Reasoning (20Q) + Coding (1-2 problems) — 180 min total</div></div>
+          <div class="round-item"><div class="round-num">2</div><div>Tech Interview: OOPs, DBMS, OS, projects, resume</div></div>
+          <div class="round-item"><div class="round-num">3</div><div>HR Round: Standard HR questions</div></div>
+        </div>
+        <div style="margin-top: 12px; font-size: 0.75rem; color: var(--accent4);">Elite roles (7 LPA) need strong coding score in NQT</div>
+      </div>
+
+      <div class="company-card mass">
+        <div class="company-header">
+          <div class="company-name">Infosys</div>
+          <span class="package-badge badge-green">3.6–9 LPA</span>
+        </div>
+        <span class="company-tag">IT Giant</span>
+        <span class="company-tag">HackWithInfy</span>
+        <div class="rounds-list">
+          <div class="round-item"><div class="round-num">1</div><div>Aptitude: 50–60 Q in 100 min — Logical, Quant, Verbal. No negative marking.</div></div>
+          <div class="round-item"><div class="round-num">2</div><div>Coding Round (for SP/PP roles): DSA problems, needs optimal solutions</div></div>
+          <div class="round-item"><div class="round-num">3</div><div>Tech + HR Interview</div></div>
+        </div>
+        <div style="margin-top: 12px; font-size: 0.75rem; color: var(--accent4);">HackWithInfy crack karo = 8–9 LPA Specialist Programmer role</div>
+      </div>
+
+      <div class="company-card mass">
+        <div class="company-header">
+          <div class="company-name">Wipro / Cognizant</div>
+          <span class="package-badge badge-green">3.5–6.5 LPA</span>
+        </div>
+        <span class="company-tag">IT Services</span>
+        <span class="company-tag">Mass Recruiter</span>
+        <div class="rounds-list">
+          <div class="round-item"><div class="round-num">1</div><div>Online Test: Aptitude + Logical + Verbal + Basic Coding</div></div>
+          <div class="round-item"><div class="round-num">2</div><div>Tech Interview: OOPs, DSA basics, CS fundamentals</div></div>
+          <div class="round-item"><div class="round-num">3</div><div>HR Round</div></div>
+        </div>
+      </div>
+
+      <div class="company-card mass">
+        <div class="company-header">
+          <div class="company-name">Accenture / HCL</div>
+          <span class="package-badge badge-green">4–6 LPA</span>
+        </div>
+        <span class="company-tag">IT Services</span>
+        <span class="company-tag">Mass Recruiter</span>
+        <div class="rounds-list">
+          <div class="round-item"><div class="round-num">1</div><div>Cognitive + Verbal + Coding Assessment</div></div>
+          <div class="round-item"><div class="round-num">2</div><div>Communication Assessment</div></div>
+          <div class="round-item"><div class="round-num">3</div><div>Tech + HR Interview</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+    <div class="section-title"><span class="icon">🚀</span> Super Dream — 15 LPA+ (Moonshot)</div>
+    <div class="company-grid">
+      <div class="company-card super">
+        <div class="company-header">
+          <div class="company-name">Amazon</div>
+          <span class="package-badge badge-purple">44 LPA</span>
+        </div>
+        <span class="company-tag">FAANG</span>
+        <span class="company-tag">ABES mein aaya hai</span>
+        <div class="rounds-list">
+          <div class="round-item"><div class="round-num">1</div><div>Online Assessment: 2 DSA problems (Medium-Hard) + Debug section + Work Simulation</div></div>
+          <div class="round-item"><div class="round-num">2</div><div>Tech Rounds (2-3): DSA + System Design basics + Leadership Principles</div></div>
+          <div class="round-item"><div class="round-num">3</div><div>Bar Raiser Round: Behavioural based on 16 Leadership Principles</div></div>
+        </div>
+        <div style="margin-top: 12px; font-size: 0.75rem; color: var(--highlight);">🔥 Bahut rare ABES mein, lekin possible. LeetCode Hard level required.</div>
+      </div>
+
+      <div class="company-card super">
+        <div class="company-header">
+          <div class="company-name">Atlassian</div>
+          <span class="package-badge badge-purple">59.9 LPA</span>
+        </div>
+        <span class="company-tag">ABES Highest 2025</span>
+        <div class="rounds-list">
+          <div class="round-item"><div class="round-num">1</div><div>Take-home coding challenge</div></div>
+          <div class="round-item"><div class="round-num">2</div><div>Multiple technical rounds: DSA + System Design + Code Review</div></div>
+          <div class="round-item"><div class="round-num">3</div><div>Values-based interview (Atlassian Values)</div></div>
+        </div>
+        <div style="margin-top: 12px; font-size: 0.75rem; color: var(--highlight);">🔥 ABES se 2025 mein yahi highest tha. Exceptional DSA needed.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOPICS TAB -->
+  <div id="tab-topics" class="section">
+    <div class="info-box">
+      <strong>💡 Smart Prep Strategy:</strong> Mass recruiters ke liye aptitude + basic DSA + OOPs sufficient. Dream companies (8-10 LPA) ke liye DSA Medium level + CS fundamentals strong karo. Super Dreams ke liye LeetCode Hard level target karo.
+    </div>
+
+    <div class="section-title"><span class="icon">📚</span> Core Topics — Priority Wise</div>
+
+    <div class="topic-grid">
+      <div class="topic-card">
+        <div class="topic-header">
+          <div class="topic-icon" style="background: rgba(124,58,237,0.15);">🧩</div>
+          <div>
+            <div class="topic-name">Data Structures & Algorithms</div>
+            <div class="topic-sub">EVERY company — highest weight</div>
+          </div>
+        </div>
+        <ul class="subtopic-list">
+          <li>Arrays & Strings <span class="priority p-high">HIGH</span></li>
+          <li>Linked Lists (LL, DLL, Circular) <span class="priority p-high">HIGH</span></li>
+          <li>Stacks & Queues <span class="priority p-high">HIGH</span></li>
+          <li>Binary Trees & BST <span class="priority p-high">HIGH</span></li>
+          <li>Graphs (BFS, DFS, Dijkstra) <span class="priority p-med">MED</span></li>
+          <li>Dynamic Programming (DP) <span class="priority p-med">MED</span></li>
+          <li>Recursion & Backtracking <span class="priority p-med">MED</span></li>
+          <li>Sorting & Searching <span class="priority p-high">HIGH</span></li>
+          <li>Hashing & HashMaps <span class="priority p-high">HIGH</span></li>
+          <li>Two Pointers, Sliding Window <span class="priority p-high">HIGH</span></li>
+        </ul>
+      </div>
+
+      <div class="topic-card">
+        <div class="topic-header">
+          <div class="topic-icon" style="background: rgba(6,182,212,0.15);">🖥</div>
+          <div>
+            <div class="topic-name">OOPs Concepts</div>
+            <div class="topic-sub">TCS, Infosys, Cisco, Synopsys</div>
+          </div>
+        </div>
+        <ul class="subtopic-list">
+          <li>Classes & Objects <span class="priority p-high">HIGH</span></li>
+          <li>Inheritance (types) <span class="priority p-high">HIGH</span></li>
+          <li>Polymorphism (compile + runtime) <span class="priority p-high">HIGH</span></li>
+          <li>Encapsulation & Abstraction <span class="priority p-high">HIGH</span></li>
+          <li>Constructors & Destructors <span class="priority p-med">MED</span></li>
+          <li>Virtual Functions <span class="priority p-med">MED</span></li>
+          <li>Friend Functions <span class="priority p-low">LOW</span></li>
+          <li>Abstract Classes vs Interface <span class="priority p-med">MED</span></li>
+          <li>Access Specifiers <span class="priority p-high">HIGH</span></li>
+        </ul>
+      </div>
+
+      <div class="topic-card">
+        <div class="topic-header">
+          <div class="topic-icon" style="background: rgba(16,185,129,0.15);">🗄</div>
+          <div>
+            <div class="topic-name">DBMS & SQL</div>
+            <div class="topic-sub">Goldman Sachs, HSBC, Cisco, TCS</div>
+          </div>
+        </div>
+        <ul class="subtopic-list">
+          <li>Joins (Inner, Left, Right, Full) <span class="priority p-high">HIGH</span></li>
+          <li>Normalization (1NF to 3NF, BCNF) <span class="priority p-high">HIGH</span></li>
+          <li>Transactions & ACID <span class="priority p-high">HIGH</span></li>
+          <li>Indexes & B-Trees <span class="priority p-med">MED</span></li>
+          <li>GROUP BY, HAVING, ORDER BY <span class="priority p-high">HIGH</span></li>
+          <li>Subqueries & Nested Queries <span class="priority p-med">MED</span></li>
+          <li>Keys (Primary, Foreign, Candidate) <span class="priority p-high">HIGH</span></li>
+          <li>ER Diagrams <span class="priority p-med">MED</span></li>
+          <li>Stored Procedures & Triggers <span class="priority p-low">LOW</span></li>
+        </ul>
+      </div>
+
+      <div class="topic-card">
+        <div class="topic-header">
+          <div class="topic-icon" style="background: rgba(245,158,11,0.15);">⚙</div>
+          <div>
+            <div class="topic-name">Operating Systems</div>
+            <div class="topic-sub">Cisco, Synopsys, most tech interviews</div>
+          </div>
+        </div>
+        <ul class="subtopic-list">
+          <li>Processes & Threads <span class="priority p-high">HIGH</span></li>
+          <li>CPU Scheduling (FCFS, SJF, Round Robin) <span class="priority p-high">HIGH</span></li>
+          <li>Deadlock (conditions, prevention) <span class="priority p-high">HIGH</span></li>
+          <li>Memory Management (paging, segmentation) <span class="priority p-med">MED</span></li>
+          <li>Virtual Memory & Page Replacement <span class="priority p-med">MED</span></li>
+          <li>Semaphores & Mutex <span class="priority p-high">HIGH</span></li>
+          <li>File Systems <span class="priority p-low">LOW</span></li>
+          <li>System Calls <span class="priority p-med">MED</span></li>
+        </ul>
+      </div>
+
+      <div class="topic-card">
+        <div class="topic-header">
+          <div class="topic-icon" style="background: rgba(239,68,68,0.15);">🌐</div>
+          <div>
+            <div class="topic-name">Computer Networks</div>
+            <div class="topic-sub">Cisco (bahut important!), HSBC, NTT</div>
+          </div>
+        </div>
+        <ul class="subtopic-list">
+          <li>OSI Model (7 layers) <span class="priority p-high">HIGH</span></li>
+          <li>TCP/IP Model <span class="priority p-high">HIGH</span></li>
+          <li>TCP vs UDP <span class="priority p-high">HIGH</span></li>
+          <li>HTTP, HTTPS, DNS, DHCP <span class="priority p-high">HIGH</span></li>
+          <li>IP Addressing & Subnetting <span class="priority p-med">MED</span></li>
+          <li>Routing Protocols (OSPF, BGP basics) <span class="priority p-med">MED</span></li>
+          <li>Firewalls, NAT <span class="priority p-med">MED</span></li>
+          <li>Encryption basics <span class="priority p-med">MED</span></li>
+        </ul>
+      </div>
+
+      <div class="topic-card">
+        <div class="topic-header">
+          <div class="topic-icon" style="background: rgba(124,58,237,0.15);">🧮</div>
+          <div>
+            <div class="topic-name">Aptitude (Quant + Logical + Verbal)</div>
+            <div class="topic-sub">TCS, Infosys, Wipro, Capgemini — Round 1</div>
+          </div>
+        </div>
+        <ul class="subtopic-list">
+          <li>Percentages & Profit-Loss <span class="priority p-high">HIGH</span></li>
+          <li>Time-Speed-Distance <span class="priority p-high">HIGH</span></li>
+          <li>Permutation & Combination <span class="priority p-high">HIGH</span></li>
+          <li>Probability <span class="priority p-med">MED</span></li>
+          <li>Number Series & Patterns <span class="priority p-high">HIGH</span></li>
+          <li>Syllogisms <span class="priority p-med">MED</span></li>
+          <li>Coding-Decoding <span class="priority p-med">MED</span></li>
+          <li>Reading Comprehension <span class="priority p-high">HIGH</span></li>
+          <li>Error Spotting, Fill Blanks <span class="priority p-med">MED</span></li>
+        </ul>
+      </div>
+
+      <div class="topic-card">
+        <div class="topic-header">
+          <div class="topic-icon" style="background: rgba(6,182,212,0.15);">🧠</div>
+          <div>
+            <div class="topic-name">Puzzles & Brain Teasers</div>
+            <div class="topic-sub">Goldman Sachs, Microsoft, Amazon</div>
+          </div>
+        </div>
+        <ul class="subtopic-list">
+          <li>Train puzzle (crossing, meeting) <span class="priority p-high">HIGH</span></li>
+          <li>Weighing balance puzzles <span class="priority p-high">HIGH</span></li>
+          <li>River crossing problems <span class="priority p-med">MED</span></li>
+          <li>Light bulb switch problem <span class="priority p-med">MED</span></li>
+          <li>Egg drop problem <span class="priority p-med">MED</span></li>
+          <li>Birthday problem <span class="priority p-low">LOW</span></li>
+          <li>Monty Hall problem <span class="priority p-low">LOW</span></li>
+        </ul>
+      </div>
+
+      <div class="topic-card">
+        <div class="topic-header">
+          <div class="topic-icon" style="background: rgba(16,185,129,0.15);">💬</div>
+          <div>
+            <div class="topic-name">HR & Behavioural</div>
+            <div class="topic-sub">Every single company — final filter</div>
+          </div>
+        </div>
+        <ul class="subtopic-list">
+          <li>"Tell me about yourself" (2 min version) <span class="priority p-high">HIGH</span></li>
+          <li>Strengths & Weaknesses <span class="priority p-high">HIGH</span></li>
+          <li>Why this company? <span class="priority p-high">HIGH</span></li>
+          <li>Where do you see yourself in 5 years? <span class="priority p-high">HIGH</span></li>
+          <li>Team conflict situation (STAR method) <span class="priority p-med">MED</span></li>
+          <li>Relocation willingness <span class="priority p-high">HIGH</span></li>
+          <li>Project explanation clearly <span class="priority p-high">HIGH</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+    <div class="section-title"><span class="icon">❓</span> Most Asked Interview Questions</div>
+
+    <div class="accordion">
+      <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          DSA — Frequently Asked Coding Questions
+          <span class="accordion-arrow">▼</span>
+        </div>
+        <div class="accordion-body">
+          <ul style="list-style: none; display: flex; flex-wrap: wrap; gap: 8px;">
+            <li style="background: var(--surface); border: 1px solid var(--border); padding: 5px 10px; border-radius: 6px; font-size: 0.78rem;">Two Sum</li>
+            <li style="background: var(--surface); border: 1px solid var(--border); padding: 5px 10px; border-radius: 6px; font-size: 0.78rem;">Longest Substring Without Repeat</li>
+            <li style="background: var(--surface); border: 1px solid var(--border); padding: 5px 10px; border-radius: 6px; font-size: 0.78rem;">Reverse Linked List</li>
+            <li style="background: var(--surface); border: 1px solid var(--border); padding: 5px 10px; border-radius: 6px; font-size: 0.78rem;">Valid Parentheses</li>
+            <li style="background: var(--surface); border: 1px solid var(--border); padding: 5px 10px; border-radius: 6px; font-size: 0.78rem;">Binary Search</li>
+            <li style="background: var(--surface); border: 1px solid var(--border); padding: 5px 10px; border-radius: 6px; font-size: 0.78rem;">Merge Two Sorted Lists</li>
+            <li style="background: var(--surface); border: 1px solid var(--border); padding: 5px 10px; border-radius: 6px; font-size: 0.78rem;">Move Zeroes to End</li>
+            <li style="background: var(--surface); border: 1px solid var(--border); padding: 5px 10px; border-radius: 6px; font-size: 0.78rem;">Frequency of Characters</li>
+            <li style="background: var(--surface); border: 1px solid var(--border); padding: 5px 10px; border-radius: 6px; font-size: 0.78rem;">Anagram Check</li>
+            <li style="background: var(--surface); border: 1px solid var(--border); padding: 5px 10px; border-radius: 6px; font-size: 0.78rem;">Find Duplicate</li>
+            <li style="background: var(--surface); border: 1px solid var(--border); padding: 5px 10px; border-radius: 6px; font-size: 0.78rem;">Level Order Traversal</li>
+            <li style="background: var(--surface); border: 1px solid var(--border); padding: 5px 10px; border-radius: 6px; font-size: 0.78rem;">Stock Buy Sell Max Profit</li>
+          </ul>
+          <div class="code-snippet">
+// Most asked pattern: Sliding Window — MUST KNOW!<br>
+int maxSubarrayLen(vector&lt;int&gt;& nums, int k) {<br>
+&nbsp;&nbsp;int left = 0, sum = 0, maxLen = 0;<br>
+&nbsp;&nbsp;for (int right = 0; right &lt; nums.size(); right++) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;sum += nums[right];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;while (sum > k) sum -= nums[left++];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;maxLen = max(maxLen, right - left + 1);<br>
+&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;return maxLen;<br>
+}
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          OOPs — Top Interview Questions
+          <span class="accordion-arrow">▼</span>
+        </div>
+        <div class="accordion-body">
+          <p style="margin-bottom: 10px;">Most poocha jaata hai TCS, Infosys, Synopsys, Cisco mein:</p>
+          <ul style="list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+            <li style="font-size: 0.8rem; color: var(--muted);">• Polymorphism explain karo with example</li>
+            <li style="font-size: 0.8rem; color: var(--muted);">• Inheritance types in C++/Java</li>
+            <li style="font-size: 0.8rem; color: var(--muted);">• Abstract class vs Interface difference</li>
+            <li style="font-size: 0.8rem; color: var(--muted);">• Virtual function kya hota hai?</li>
+            <li style="font-size: 0.8rem; color: var(--muted);">• Constructor types + order of execution</li>
+            <li style="font-size: 0.8rem; color: var(--muted);">• Encapsulation real-world example</li>
+            <li style="font-size: 0.8rem; color: var(--muted);">• Function overloading vs overriding</li>
+            <li style="font-size: 0.8rem; color: var(--muted);">• Friend function kab use karte hain?</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          SQL — Must-Know Queries
+          <span class="accordion-arrow">▼</span>
+        </div>
+        <div class="accordion-body">
+          <div class="code-snippet">
+-- 2nd Highest Salary (bahut common!)<br>
+SELECT MAX(salary) FROM employees<br>
+WHERE salary &lt; (SELECT MAX(salary) FROM employees);<br><br>
+-- Department wise highest salary<br>
+SELECT dept, MAX(salary) FROM employees GROUP BY dept;<br><br>
+-- Employees joined in last 30 days<br>
+SELECT * FROM employees<br>
+WHERE join_date &gt;= CURDATE() - INTERVAL 30 DAY;<br><br>
+-- Count employees per department having &gt; 5<br>
+SELECT dept, COUNT(*) FROM employees<br>
+GROUP BY dept HAVING COUNT(*) &gt; 5;
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          Goldman Sachs Special — Puzzles List
+          <span class="accordion-arrow">▼</span>
+        </div>
+        <div class="accordion-body">
+          <ul style="list-style: none; display: grid; gap: 8px;">
+            <li style="font-size: 0.82rem; color: var(--muted); padding: 8px; background: var(--surface); border-radius: 6px;">🚂 <strong style="color: var(--text);">Train Puzzle:</strong> If trains leave from Delhi and Kanyakumari daily, how many trains do you meet on the way?</li>
+            <li style="font-size: 0.82rem; color: var(--muted); padding: 8px; background: var(--surface); border-radius: 6px;">🐸 <strong style="color: var(--text);">Frog Puzzle:</strong> 3 red frogs and 3 blue frogs need to swap positions with constraints</li>
+            <li style="font-size: 0.82rem; color: var(--muted); padding: 8px; background: var(--surface); border-radius: 6px;">⚖ <strong style="color: var(--text);">Weighing Puzzle:</strong> Find the odd coin among 12 using balance scale in 3 weighings</li>
+            <li style="font-size: 0.82rem; color: var(--muted); padding: 8px; background: var(--surface); border-radius: 6px;">💡 <strong style="color: var(--text);">Bulb Switch:</strong> 3 switches outside, 1 room — identify which switch controls which bulb</li>
+            <li style="font-size: 0.82rem; color: var(--muted); padding: 8px; background: var(--surface); border-radius: 6px;">🥚 <strong style="color: var(--text);">Egg Drop:</strong> 2 eggs, 100 floors — minimize number of drops to find breaking floor</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROADMAP TAB -->
+  <div id="tab-roadmap" class="section">
+    <div class="section-title"><span class="icon">🗓</span> 3-Month Preparation Roadmap</div>
+    <div class="info-box">
+      <strong>💡 Assumption:</strong> ABES mein 7th semester se placements start hoti hain. Yeh roadmap assume karta hai ki tumhare paas 12 weeks hain. Roz minimum 3-4 hours dena hoga.
+    </div>
+
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-week">Week 1–2</div>
+        <div class="timeline-title">🧱 Foundation — DSA Basics + C++ Polish</div>
+        <div class="timeline-tasks">
+          <li>Arrays, Strings (LC Easy level)</li>
+          <li>Linked List basics</li>
+          <li>STL: vector, map, set, queue, stack</li>
+          <li>OOPs revision (C++)</li>
+          <li>Aptitude: Percentages, Time-Speed</li>
+          <li>Platform: LeetCode Easy 1-2 Q/day</li>
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-week">Week 3–4</div>
+        <div class="timeline-title">📈 Core DSA — Must-Know Patterns</div>
+        <div class="timeline-tasks">
+          <li>Two Pointers + Sliding Window</li>
+          <li>Binary Search (all variants)</li>
+          <li>Stack & Queue problems</li>
+          <li>Trees: traversals, height, diameter</li>
+          <li>DBMS: Normalization + Joins</li>
+          <li>SQL: Practice 30 standard queries</li>
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-week">Week 5–6</div>
+        <div class="timeline-title">⚡ CS Fundamentals Deep-Dive</div>
+        <div class="timeline-tasks">
+          <li>OS: Process, Threads, Scheduling, Deadlock</li>
+          <li>CN: OSI Layers, TCP/IP, HTTP, DNS</li>
+          <li>Graphs: BFS, DFS (LC Medium)</li>
+          <li>Hashing problems</li>
+          <li>Aptitude: P&C, Probability</li>
+          <li>Prepare "Tell me about yourself" script</li>
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-week">Week 7–8</div>
+        <div class="timeline-title">🎯 Company-Specific Prep</div>
+        <div class="timeline-tasks">
+          <li>TCS NQT mock tests (PrepInsta)</li>
+          <li>Infosys aptitude previous papers</li>
+          <li>Cisco: Networking questions specifically</li>
+          <li>Dynamic Programming: Top 10 classic</li>
+          <li>Resume finalize karo</li>
+          <li>2 GitHub projects live karo</li>
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-week">Week 9–10</div>
+        <div class="timeline-title">🔥 Medium-Hard DSA + Mock Interviews</div>
+        <div class="timeline-tasks">
+          <li>LeetCode Medium: 2-3 Q/day</li>
+          <li>Goldman Sachs puzzles practice</li>
+          <li>Capgemini Exceller pseudocode practice</li>
+          <li>Mock interview with friends (weekly)</li>
+          <li>English communication improvement</li>
+          <li>Striver's SDE Sheet — complete 60%</li>
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-week">Week 11–12</div>
+        <div class="timeline-title">✅ Full Mock + Revision + Mental Prep</div>
+        <div class="timeline-tasks">
+          <li>Full mock tests on InterviewBit/PrepInsta</li>
+          <li>DBMS + OS revision quick notes</li>
+          <li>HR questions final prep</li>
+          <li>Resume 1-page final version</li>
+          <li>Project demo 2-min walkthrough practice</li>
+          <li>LinkedIn profile update</li>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+    <div class="section-title"><span class="icon">📅</span> Daily Schedule (3-4 Hours)</div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px;">
+      <div style="background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px;">
+        <div style="font-family: 'Space Mono', monospace; font-size: 0.7rem; color: var(--accent2); margin-bottom: 8px;">MORNING (1 hr)</div>
+        <div style="font-size: 0.82rem; line-height: 1.6; color: var(--muted);">1 LeetCode problem solve karo. Puri approach think karo before coding.</div>
+      </div>
+      <div style="background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px;">
+        <div style="font-family: 'Space Mono', monospace; font-size: 0.7rem; color: var(--accent2); margin-bottom: 8px;">AFTERNOON (1.5 hr)</div>
+        <div style="font-size: 0.82rem; line-height: 1.6; color: var(--muted);">CS Fundamentals (OS/CN/DBMS) — ek topic roz. Notes banao short form mein.</div>
+      </div>
+      <div style="background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px;">
+        <div style="font-family: 'Space Mono', monospace; font-size: 0.7rem; color: var(--accent2); margin-bottom: 8px;">EVENING (1 hr)</div>
+        <div style="font-size: 0.82rem; line-height: 1.6; color: var(--muted);">Aptitude practice — company-specific previous papers PrepInsta se.</div>
+      </div>
+      <div style="background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px;">
+        <div style="font-family: 'Space Mono', monospace; font-size: 0.7rem; color: var(--accent2); margin-bottom: 8px;">NIGHT (30 min)</div>
+        <div style="font-size: 0.82rem; line-height: 1.6; color: var(--muted);">HR question practice aloud. Kal ka plan set karo.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHECKLIST TAB -->
+  <div id="tab-checklist" class="section">
+    <div class="section-title"><span class="icon">✅</span> Pre-Placement Checklist</div>
+
+    <div class="checklist">
+      <h3>📄 Resume & Profile</h3>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div class="check-text">Resume 1-page banao — Education, Skills, Projects, Achievements only</div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div class="check-text">CGPA/percentage clearly mention karo</div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div class="check-text">2 strong projects with tech stack, GitHub link, deployed link</div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div class="check-text">LinkedIn profile complete — photo, summary, skills, projects</div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div class="check-text">GitHub active — green contributions visible</div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div class="check-text">No active backlogs — verify with college</div>
+      </div>
+    </div>
+
+    <div class="checklist">
+      <h3>💻 DSA Milestones</h3>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div class="check-text">LeetCode: 50+ Easy problems solved</div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div class="check-text">LeetCode: 30+ Medium problems solved</div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div class="check-text">Arrays, Strings, LinkedList — fully done</div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div class="check-text">Trees + Graphs problems comfortable</div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div class="check-text">DP: Top 10 classic problems (Fibonacci, Knapsack, LCS, LIS)</div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div class="check-text">Time & Space complexity analyze kar sako every problem ka</div>
+      </div>
+    </div>
+
+    <div class="checklist">
+      <h3>📚 CS Fundamentals</h3>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div class="check-text">OOPs — 4 pillars + virtual functions + constructors</div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div class="check-text">DBMS — Normalization, Joins, ACID, Transactions</div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div class="check-text">SQL — 30 standard queries practice kar lo</div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div class="check-text">OS — Process, Thread, Scheduling, Deadlock, Memory</div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div class="check-text">Computer Networks — OSI, TCP/IP, HTTP, DNS, TCP vs UDP</div>
+      </div>
+    </div>
+
+    <div class="checklist">
+      <h3>🧠 Aptitude & Mock Tests</h3>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div class="check-text">TCS NQT mock test ek baar complete karo</div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div class="check-text">Infosys aptitude 2 full mocks done</div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div class="check-text">Capgemini pseudocode section practice</div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div class="check-text">5 Goldman Sachs puzzles memorized with approach</div>
+      </div>
+    </div>
+
+    <div class="checklist">
+      <h3>💬 Interview Readiness</h3>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div class="check-text">"Tell me about yourself" — 2 min version practice karo 10 baar</div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div class="check-text">Project explanation — tech stack, problem, solution, impact</div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div class="check-text">"Why this company?" — company research, custom answer</div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div class="check-text">Mock interview with mirror or friend weekly</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESOURCES TAB -->
+  <div id="tab-resources" class="section">
+    <div class="section-title"><span class="icon">🔗</span> Best Free Resources</div>
+
+    <div class="resources-grid">
+      <div class="resource-card">
+        <div class="resource-platform">DSA Practice</div>
+        <div class="resource-title">LeetCode</div>
+        <div class="resource-desc">Primary DSA platform. Pehle Easy solve karo, phir Medium. Company filters use karo (TCS, Amazon, Cisco) — company-specific questions niklo.</div>
+      </div>
+      <div class="resource-card">
+        <div class="resource-platform">DSA Sheet</div>
+        <div class="resource-title">Striver's SDE Sheet</div>
+        <div class="resource-desc">180+ carefully curated problems, topic-wise. takneekibhai.io ya TakeUForward website par free available. Yeh sheet complete karo — placement pakki samjho.</div>
+      </div>
+      <div class="resource-card">
+        <div class="resource-platform">Company Prep</div>
+        <div class="resource-title">PrepInsta</div>
+        <div class="resource-desc">TCS NQT, Infosys, Wipro, Capgemini ke actual previous year papers. Company-wise complete syllabus bhi hai. Free mein kaafi useful hai.</div>
+      </div>
+      <div class="resource-card">
+        <div class="resource-platform">CS Fundamentals</div>
+        <div class="resource-title">GeeksforGeeks</div>
+        <div class="resource-desc">OS, DBMS, CN, OOPs — sab kuch bahut clearly explained hai. Interview experiences bhi padho — real questions pata chalte hain company-wise.</div>
+      </div>
+      <div class="resource-card">
+        <div class="resource-platform">Mock Tests</div>
+        <div class="resource-title">IndiaBix</div>
+        <div class="resource-desc">Quantitative aptitude, logical reasoning ke liye best free resource. Roz 20-30 questions practice karo yahan se.</div>
+      </div>
+      <div class="resource-card">
+        <div class="resource-platform">SQL Practice</div>
+        <div class="resource-title">HackerRank SQL</div>
+        <div class="resource-desc">SQL challenges — Easy se Hard tak. Placmeent mein SQL queries kaafi poochi jaati hain. HackerRank SQL section complete karo.</div>
+      </div>
+      <div class="resource-card">
+        <div class="resource-platform">Video Learning</div>
+        <div class="resource-title">Striver's YouTube (TUF)</div>
+        <div class="resource-desc">DSA har topic ka best explanation in Hindi/English. Poori A2Z DSA series free hai YouTube par. Bilkul beginner-friendly.</div>
+      </div>
+      <div class="resource-card">
+        <div class="resource-platform">Puzzles</div>
+        <div class="resource-title">Brainstellar.com</div>
+        <div class="resource-desc">Goldman Sachs, Quant companies ke liye puzzles practice karo yahan. Sorted by difficulty. Must-do agar GS ya high-end companies target kar rahe ho.</div>
+      </div>
+      <div class="resource-card">
+        <div class="resource-platform">Interview Prep</div>
+        <div class="resource-title">Glassdoor / AmbitionBox</div>
+        <div class="resource-desc">Real interview experiences padho company-wise. Exact questions jo interview mein pooche gaye — anon users share karte hain. Goldmine!</div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+    <div class="section-title"><span class="icon">🎯</span> ABES CCPD Tips</div>
+    <div style="background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 20px; font-size: 0.85rem; line-height: 1.8; color: var(--muted);">
+      <p>• <strong style="color: var(--text);">CCPD (Centre for Career Planning & Development)</strong> — ABES ka placement cell. Inse regularly contact mein raho.</p>
+      <p>• Pre-Placement Talks (PPTs) mandatory attend karo — companies wahan apna process explain karti hain.</p>
+      <p>• CCPD mock GDs aur mock interviews attend karo — yeh free hote hain aur bahut help karte hain.</p>
+      <p>• Seniors se poocho — ABES mein kaunsi companies recently aayi hain aur kya poocha gaya tha.</p>
+      <p>• Placement eligible hone ke liye minimum attendance aur backlog conditions follow karo.</p>
+      <p>• <strong style="color: var(--accent2);">6th semester se hi eligibility start hoti hai ABES mein</strong> — taiyari usi se shuru karo.</p>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <div class="container">
+    Made for Aman · ABES Engineering College · Ghaziabad · Placement 2025 · <span style="color: var(--accent2);">All data sourced from NIRF, Shiksha, Collegedunia & GeeksforGeeks</span>
+  </div>
+</footer>
+
+<script>
+  function showTab(tab) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + tab).classList.add('active');
+    event.target.classList.add('active');
+  }
+
+  function toggleAccordion(header) {
+    const item = header.parentElement;
+    const wasOpen = item.classList.contains('open');
+    document.querySelectorAll('.accordion-item').forEach(i => i.classList.remove('open'));
+    if (!wasOpen) item.classList.add('open');
+  }
+
+  function toggleCheck(item) {
+    const box = item.querySelector('.check-box');
+    const text = item.querySelector('.check-text');
+    box.classList.toggle('checked');
+    text.classList.toggle('done');
+  }
+</script>
+</body>
+</html>
