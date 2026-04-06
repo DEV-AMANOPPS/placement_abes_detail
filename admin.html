@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard — ABES Placement Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root { --bg:#000000; --surface:#0a0a0a; --card:#111111; --border:#1a1a1a; --border2:#222222; --accent:#6d28d9; --accent2:#06b6d4; --accent3:#f59e0b; --accent4:#10b981; --danger:#ef4444; --text:#ffffff; --muted:#888888; --highlight:#c4b5fd; }
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;display:flex;height:100vh;overflow:hidden;-webkit-font-smoothing:antialiased}
+
+/* Sidebar */
+.sidebar{width:260px;flex-shrink:0;background:rgba(6,6,8,0.88);backdrop-filter:blur(24px) saturate(180%);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:24px 0;z-index:20}
+.sidebar-header{padding:0 20px;margin-bottom:28px}
+.sidebar-header .badge{display:inline-flex;align-items:center;gap:6px;background:rgba(109,40,217,0.15);border:1px solid rgba(109,40,217,0.3);color:var(--highlight);font-family:'JetBrains Mono',monospace;font-size:10px;padding:3px 10px;border-radius:100px;margin-bottom:12px}
+.nav-links{display:flex;flex-direction:column;gap:2px;padding:0 10px}
+.nav-btn{display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:10px;border:none;background:transparent;color:var(--muted);font-family:'Inter',system-ui,sans-serif;font-size:0.875rem;font-weight:500;cursor:pointer;transition:all 0.2s;text-align:left;width:100%;letter-spacing:-0.01em}
+.nav-btn:hover{transform:translateX(3px);background:rgba(109,40,217,0.07);color:var(--text)}
+.nav-btn.active{background:linear-gradient(135deg,var(--accent),#4c1d95);color:white;box-shadow:0 4px 16px rgba(109,40,217,0.3)}
+.sidebar-footer{margin-top:auto;padding:16px 20px;border-top:1px solid var(--border)}
+.sidebar-footer a{display:block;color:var(--muted);text-decoration:none;font-size:0.82rem;padding:8px 0;transition:color 0.2s}
+.sidebar-footer a:hover{color:var(--accent2)}
+
+/* Main */
+.main{flex:1;overflow-y:auto;position:relative;height:100vh}
+.top-bar{padding:16px 36px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);background:rgba(6,6,8,0.7);backdrop-filter:blur(20px) saturate(180%);position:sticky;top:0;z-index:10}
+.top-bar h1{font-family:'Inter',system-ui,sans-serif;font-size:1.2rem;font-weight:800;letter-spacing:-0.03em}
+.top-bar .live-dot{width:7px;height:7px;background:var(--accent4);border-radius:50%;display:inline-block;animation:pulse 2s infinite;margin-right:6px}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.top-bar .live-text{font-size:0.75rem;color:var(--accent4);display:flex;align-items:center}
+.content{padding:28px 36px;padding-bottom:80px}
+
+/* Tab panels */
+.panel{display:none;animation:fadeIn 0.3s ease}
+.panel.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* Stats cards */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;transition:all 0.25s}
+.stat-card:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,0,0,0.25);border-color:#2a2a3d}
+.stat-card .label{font-size:0.72rem;color:var(--muted);margin-bottom:8px;display:flex;align-items:center;gap:6px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em}
+.stat-card .val{font-family:'Inter',system-ui,sans-serif;font-size:2rem;font-weight:900;letter-spacing:-0.04em;background:linear-gradient(135deg,#fff,var(--highlight));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.stat-card .change{font-size:0.7rem;margin-top:6px;display:flex;align-items:center;gap:4px}
+.change.up{color:var(--accent4)}.change.down{color:var(--danger)}
+
+/* Glass card */
+.glass-card{background:rgba(16,16,25,0.6);backdrop-filter:blur(16px) saturate(180%);border:1px solid rgba(109,40,217,0.1);border-radius:16px;padding:22px;margin-bottom:18px;transition:all 0.25s}
+.glass-card:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(109,40,217,0.08)}
+.glass-card h3{font-family:'Inter',system-ui,sans-serif;font-size:0.95rem;font-weight:700;letter-spacing:-0.02em;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+
+/* Company calendar */
+.month-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.month-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;transition:all 0.25s}
+.month-card:hover{transform:translateY(-2px);border-color:#2a2a3d}
+.month-name{font-family:'Inter',system-ui,sans-serif;font-weight:700;font-size:0.9rem;letter-spacing:-0.02em;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
+.month-count{font-family:'JetBrains Mono',monospace;font-size:0.68rem;background:rgba(109,40,217,0.15);color:var(--highlight);padding:2px 8px;border-radius:100px}
+.company-pill{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:6px;font-size:0.72rem;margin:2px;border:1px solid var(--border);background:var(--surface);transition:all 0.2s;cursor:default}
+.company-pill:hover{border-color:var(--accent);background:rgba(109,40,217,0.06)}
+.pill-dream{border-left:3px solid var(--accent3)}.pill-mass{border-left:3px solid var(--accent4)}.pill-super{border-left:3px solid var(--accent)}
+
+/* Student table */
+.table-wrap{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden}
+.table-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.table-header h3{font-family:'Inter',system-ui,sans-serif;font-size:0.95rem;font-weight:700;letter-spacing:-0.02em}
+.search-input{background:var(--surface);border:1px solid var(--border);color:var(--text);padding:8px 14px;border-radius:8px;font-family:inherit;font-size:0.82rem;width:240px;outline:none;transition:border-color 0.2s}
+.search-input:focus{border-color:var(--accent)}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;padding:11px 18px;color:var(--muted);font-size:0.68rem;font-weight:700;border-bottom:1px solid var(--border);text-transform:uppercase;letter-spacing:0.08em}
+td{padding:13px 18px;border-bottom:1px solid var(--border);font-size:0.85rem}
+tr:last-child td{border-bottom:none}
+tr:hover{background:rgba(109,40,217,0.03)}
+.score-badge{padding:3px 9px;border-radius:6px;font-size:0.72rem;font-weight:700;font-family:'JetBrains Mono',monospace}
+.score-high{background:rgba(16,185,129,0.12);color:var(--accent4)}
+.score-mid{background:rgba(245,158,11,0.12);color:var(--accent3)}
+.score-low{background:rgba(239,68,68,0.12);color:var(--danger)}
+.mini-progress{width:80px;height:5px;background:var(--border);border-radius:3px;overflow:hidden;display:inline-block;vertical-align:middle;margin-right:6px}
+.mini-progress-fill{height:100%;border-radius:3px}
+
+/* Student detail modal */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);z-index:100;align-items:center;justify-content:center}
+.modal-overlay.active{display:flex}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:32px;width:90%;max-width:640px;max-height:85vh;overflow-y:auto;position:relative;animation:fadeIn 0.3s}
+.modal-close{position:absolute;top:16px;right:16px;background:var(--surface);border:1px solid var(--border);color:var(--text);width:32px;height:32px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.1rem;transition:all 0.2s}
+.modal-close:hover{background:var(--danger);border-color:var(--danger);color:white}
+
+/* Charts */
+.chart-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px}
+.chart-box{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px}
+.chart-box h4{font-family:'Inter',system-ui,sans-serif;font-size:0.875rem;font-weight:700;letter-spacing:-0.02em;margin-bottom:14px}
+
+/* Responsive */
+@media(max-width:900px){.sidebar{width:220px}.stats-row{grid-template-columns:repeat(2,1fr)}.month-grid{grid-template-columns:repeat(2,1fr)}.chart-row{grid-template-columns:1fr}}
+@media(max-width:600px){.sidebar{display:none}.content{padding:20px}.stats-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="sidebar">
+  <div class="sidebar-header">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px;">
+      <div style="width:38px;height:38px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:1rem;box-shadow:0 4px 16px rgba(109,40,217,0.3);flex-shrink:0;">⚡</div>
+      <div>
+        <div style="font-size:0.9rem;font-weight:700;letter-spacing:-0.02em;">Admin Portal</div>
+        <div style="font-size:0.68rem;color:var(--muted);">ABES Placement 2025</div>
+      </div>
+    </div>
+  </div>
+  <div class="nav-links">
+    <button class="nav-btn active" onclick="showPanel('overview')">📊 Overview</button>
+    <button class="nav-btn" onclick="showPanel('calendar')">📅 Company Calendar</button>
+    <button class="nav-btn" onclick="showPanel('analytics')">📈 Analytics</button>
+    <button class="nav-btn" onclick="showPanel('students')">👥 Students</button>
+  </div>
+  <div class="sidebar-footer">
+    <a href="index.html">← Back to Site</a>
+    <a href="login.html">🔒 Logout</a>
+  </div>
+</div>
+
+<div class="main">
+  <div class="top-bar">
+    <div>
+      <h1 id="panelTitle">Overview</h1>
+      <div class="live-text"><span class="live-dot"></span> Real-time data · Auto-refreshes every 5s</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px">
+      <span style="font-size:0.78rem;color:var(--muted)" id="lastUpdated"></span>
+      <div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-weight:700;color:white;font-size:0.85rem">A</div>
+    </div>
+  </div>
+
+  <div class="content">
+    <!-- OVERVIEW -->
+    <div id="panel-overview" class="panel active">
+      <div class="stats-row" id="statsRow"></div>
+      <div class="chart-row">
+        <div class="chart-box"><h4>📈 Resume Score Distribution</h4><canvas id="chartScores" height="200"></canvas></div>
+        <div class="chart-box"><h4>📊 Checklist Completion</h4><canvas id="chartChecklist" height="200"></canvas></div>
+      </div>
+      <div class="glass-card">
+        <h3>🏢 Upcoming Drives This Month</h3>
+        <div id="upcomingDrives"></div>
+      </div>
+      <div class="glass-card">
+        <h3>⚠️ Students Needing Attention</h3>
+        <div id="attentionList"></div>
+      </div>
+    </div>
+
+    <!-- COMPANY CALENDAR -->
+    <div id="panel-calendar" class="panel">
+      <div class="glass-card"><h3>📅 Company Visit Calendar — Month Wise</h3><p style="color:var(--muted);font-size:0.85rem;margin-top:-8px">Companies visiting ABES campus, organized by expected month</p></div>
+      <div class="month-grid" id="monthGrid"></div>
+    </div>
+
+    <!-- ANALYTICS -->
+    <div id="panel-analytics" class="panel">
+      <div class="stats-row" id="analyticsStats"></div>
+      <div class="chart-row">
+        <div class="chart-box"><h4>🎯 Score Ranges</h4><canvas id="chartRanges" height="220"></canvas></div>
+        <div class="chart-box"><h4>📚 Weak Areas Across Students</h4><canvas id="chartWeakAreas" height="220"></canvas></div>
+      </div>
+      <div class="chart-row">
+        <div class="chart-box"><h4>🏢 Company Match Rate</h4><canvas id="chartMatchRate" height="220"></canvas></div>
+        <div class="chart-box"><h4>📋 Section Completion</h4><canvas id="chartSections" height="220"></canvas></div>
+      </div>
+    </div>
+
+    <!-- STUDENTS -->
+    <div id="panel-students" class="panel">
+      <div class="table-wrap">
+        <div class="table-header">
+          <h3>👥 Registered Students</h3>
+          <input class="search-input" type="text" placeholder="🔍 Search students..." oninput="filterStudents(this.value)">
+        </div>
+        <table>
+          <thead><tr><th>Student</th><th>Branch</th><th>CGPA</th><th>Resume Score</th><th>Checklist</th><th>Matched</th><th>Status</th><th></th></tr></thead>
+          <tbody id="studentTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Student Detail Modal -->
+<div class="modal-overlay" id="studentModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+<script>
+// =============================================
+// DATA LAYER — reads from localStorage
+// =============================================
+function getAllStudents() {
+  const registry = JSON.parse(localStorage.getItem('student_registry') || '[]');
+  return registry.map(id => {
+    const raw = localStorage.getItem('student_profile_' + id);
+    return raw ? JSON.parse(raw) : null;
+  }).filter(Boolean);
+}
+
+const companyCalendar = [
+  { month: 'August', companies: [{ name:'TCS (NQT)', tier:'mass', pkg:'3.5–7 LPA' }] },
+  { month: 'September', companies: [{ name:'TCS (NQT)', tier:'mass', pkg:'3.5–7 LPA' },{ name:'Infosys', tier:'mass', pkg:'3.6–9 LPA' }] },
+  { month: 'October', companies: [{ name:'Infosys', tier:'mass', pkg:'3.6–9 LPA' },{ name:'Wipro', tier:'mass', pkg:'3.5–6.5 LPA' },{ name:'Cognizant', tier:'mass', pkg:'4–6 LPA' },{ name:'Cisco', tier:'dream', pkg:'8–12 LPA' }] },
+  { month: 'November', companies: [{ name:'Tech Mahindra', tier:'mass', pkg:'4.2–5.5 LPA' },{ name:'Accenture', tier:'mass', pkg:'4–6 LPA' },{ name:'Synopsys', tier:'dream', pkg:'8–14 LPA' },{ name:'Goldman Sachs', tier:'dream', pkg:'10–15 LPA' }] },
+  { month: 'December', companies: [{ name:'HCL', tier:'mass', pkg:'4–6 LPA' },{ name:'Capgemini Exceller', tier:'dream', pkg:'7.5 LPA' },{ name:'GroundTruth', tier:'dream', pkg:'8–10 LPA' }] },
+  { month: 'January', companies: [{ name:'IBM', tier:'mass', pkg:'4.25–7 LPA' },{ name:'HSBC', tier:'dream', pkg:'7–9 LPA' },{ name:'NTT Data', tier:'dream', pkg:'7–9 LPA' }] },
+  { month: 'February', companies: [{ name:'Amazon', tier:'super', pkg:'44 LPA' },{ name:'IBM', tier:'mass', pkg:'4.25–7 LPA' }] },
+  { month: 'March', companies: [{ name:'Atlassian', tier:'super', pkg:'59.9 LPA' }] },
+];
+
+// =============================================
+// PANEL SWITCHING
+// =============================================
+function showPanel(name) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+  event.target.closest('.nav-btn').classList.add('active');
+  const titles = { overview:'Overview', calendar:'Company Calendar', analytics:'Analytics', students:'Students' };
+  document.getElementById('panelTitle').textContent = titles[name] || name;
+  if(name === 'analytics') renderAnalytics();
+  if(name === 'calendar') renderCalendar();
+  if(name === 'students') renderStudents();
+}
+
+// =============================================
+// OVERVIEW PANEL
+// =============================================
+let chartScores, chartChecklist;
+
+function renderOverview() {
+  const students = getAllStudents();
+  const totalCompanies = companyCalendar.reduce((s,m) => s + m.companies.length, 0);
+  const avgScore = students.length ? Math.round(students.reduce((s,st) => s + (st.resumeScore||0), 0) / students.length) : 0;
+  const avgChecklist = students.length ? Math.round(students.reduce((s,st) => s + (st.checklistProgress||0), 0) / students.length) : 0;
+  const placementReady = students.filter(s => (s.resumeScore||0) >= 70 && (s.checklistProgress||0) >= 60).length;
+
+  document.getElementById('statsRow').innerHTML = `
+    <div class="stat-card"><div class="label">👥 Total Students</div><div class="val">${students.length}</div><div class="change up">↑ Live from localStorage</div></div>
+    <div class="stat-card"><div class="label">🏢 Companies Expected</div><div class="val">${totalCompanies}</div><div class="change up">8 months tracked</div></div>
+    <div class="stat-card"><div class="label">📄 Avg Resume Score</div><div class="val">${avgScore}%</div><div class="change ${avgScore >= 60 ? 'up' : 'down'}">${avgScore >= 60 ? '↑ Good' : '↓ Needs improvement'}</div></div>
+    <div class="stat-card"><div class="label">✅ Placement Ready</div><div class="val">${placementReady}</div><div class="change up">${students.length ? Math.round(placementReady/students.length*100) : 0}% of students</div></div>`;
+
+  // Score chart — shows how many students fall in each resume score range
+  const scoreRanges = [0,0,0,0,0];
+  students.forEach(s => { const sc = s.resumeScore||0; if(sc>=80) scoreRanges[4]++; else if(sc>=60) scoreRanges[3]++; else if(sc>=40) scoreRanges[2]++; else if(sc>=20) scoreRanges[1]++; else scoreRanges[0]++; });
+  if(chartScores) chartScores.destroy();
+  chartScores = new Chart(document.getElementById('chartScores'), {
+    type:'bar',
+    data:{
+      labels:['0-19% (Critical)','20-39% (Weak)','40-59% (Average)','60-79% (Good)','80-100% (Excellent)'],
+      datasets:[{ label:'Students', data:scoreRanges, backgroundColor:['#ef4444','#f59e0b','#eab308','#06b6d4','#10b981'], borderRadius:6, borderSkipped:false }]
+    },
+    options:{
+      responsive:true,
+      plugins:{
+        legend:{display:false},
+        tooltip:{ callbacks:{ label: ctx => ctx.parsed.y + ' student' + (ctx.parsed.y!==1?'s':'') + ' in this range' } }
+      },
+      scales:{
+        y:{title:{display:true,text:'Number of Students',color:'#64748b',font:{size:11}},ticks:{color:'#64748b',stepSize:1},grid:{color:'#1e1e2e'}},
+        x:{ticks:{color:'#64748b',font:{size:10}},grid:{display:false}}
+      }
+    }
+  });
+
+  // Checklist chart — shows real-time checklist completion distribution
+  const checkRanges = [0,0,0,0];
+  students.forEach(s => { const c = s.checklistProgress||0; if(c>=75) checkRanges[3]++; else if(c>=50) checkRanges[2]++; else if(c>=25) checkRanges[1]++; else checkRanges[0]++; });
+  if(chartChecklist) chartChecklist.destroy();
+  chartChecklist = new Chart(document.getElementById('chartChecklist'), {
+    type:'doughnut',
+    data:{
+      labels:[
+        `0-24% Beginners (${checkRanges[0]} students)`,
+        `25-49% In Progress (${checkRanges[1]} students)`,
+        `50-74% Advanced (${checkRanges[2]} students)`,
+        `75-100% Ready (${checkRanges[3]} students)`
+      ],
+      datasets:[{ data:checkRanges, backgroundColor:['#ef4444','#f59e0b','#06b6d4','#10b981'], borderWidth:0, hoverOffset:8 }]
+    },
+    options:{
+      responsive:true,
+      plugins:{
+        legend:{position:'bottom',labels:{color:'#e2e8f0',padding:10,font:{size:11},usePointStyle:true,pointStyle:'circle'}},
+        tooltip:{ callbacks:{ label: ctx => ctx.label } }
+      }
+    }
+  });
+
+  // Upcoming drives
+  const now = new Date();
+  const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const curMonth = monthNames[now.getMonth()];
+  const upcoming = companyCalendar.find(m => m.month === curMonth);
+  const ud = document.getElementById('upcomingDrives');
+  if(upcoming && upcoming.companies.length) {
+    ud.innerHTML = upcoming.companies.map(c => `<span class="company-pill pill-${c.tier}">${c.tier==='super'?'🚀':c.tier==='dream'?'🏆':'🌊'} ${c.name} · ${c.pkg}</span>`).join('');
+  } else { ud.innerHTML = '<p style="color:var(--muted);font-size:0.85rem">No drives scheduled this month.</p>'; }
+
+  // Attention list
+  const weak = students.filter(s => (s.resumeScore||0) < 50 || (s.checklistProgress||0) < 30).slice(0,5);
+  const al = document.getElementById('attentionList');
+  if(weak.length) {
+    al.innerHTML = weak.map(s => `<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)">
+      <div><strong>${s.name}</strong> <span style="color:var(--muted);font-size:0.8rem">${s.branch} · CGPA ${s.cgpa}</span></div>
+      <div style="display:flex;gap:8px"><span class="score-badge score-low">Resume ${s.resumeScore||0}%</span><span class="score-badge ${(s.checklistProgress||0)>=50?'score-mid':'score-low'}">Checklist ${s.checklistProgress||0}%</span></div>
+    </div>`).join('');
+  } else { al.innerHTML = '<p style="color:var(--accent4);font-size:0.85rem">✅ All students are performing well!</p>'; }
+
+  document.getElementById('lastUpdated').textContent = 'Updated: ' + new Date().toLocaleTimeString();
+}
+
+// =============================================
+// COMPANY CALENDAR
+// =============================================
+function renderCalendar() {
+  const grid = document.getElementById('monthGrid');
+  grid.innerHTML = companyCalendar.map(m => `
+    <div class="month-card">
+      <div class="month-name">${m.month} <span class="month-count">${m.companies.length} companies</span></div>
+      <div>${m.companies.map(c => `<span class="company-pill pill-${c.tier}">${c.tier==='super'?'🚀':c.tier==='dream'?'🏆':'🌊'} ${c.name}<span style="color:var(--muted);font-size:0.65rem;margin-left:4px">${c.pkg}</span></span>`).join('')}</div>
+    </div>`).join('');
+}
+
+// =============================================
+// ANALYTICS
+// =============================================
+let chartRanges, chartWeakAreas, chartMatchRate, chartSections;
+
+function renderAnalytics() {
+  const students = getAllStudents();
+  const withResume = students.filter(s => s.resumeScore !== null);
+  const avgScore = withResume.length ? Math.round(withResume.reduce((s,st)=>s+st.resumeScore,0)/withResume.length) : 0;
+  const avgChecklist = students.length ? Math.round(students.reduce((s,st)=>s+(st.checklistProgress||0),0)/students.length) : 0;
+  const totalMatches = students.reduce((s,st)=>s+(st.matchedCompanies||0),0);
+  
+  document.getElementById('analyticsStats').innerHTML = `
+    <div class="stat-card"><div class="label">📄 Resumes Analyzed</div><div class="val">${withResume.length}</div></div>
+    <div class="stat-card"><div class="label">📊 Avg Score</div><div class="val">${avgScore}%</div></div>
+    <div class="stat-card"><div class="label">✅ Avg Checklist</div><div class="val">${avgChecklist}%</div></div>
+    <div class="stat-card"><div class="label">🏢 Total Matches</div><div class="val">${totalMatches}</div></div>`;
+
+  // Score ranges bar — horizontal bar showing student count per score range
+  const ranges = {'90-100% Excellent':0,'70-89% Good':0,'50-69% Average':0,'30-49% Weak':0,'0-29% Critical':0};
+  withResume.forEach(s => { const sc=s.resumeScore; if(sc>=90)ranges['90-100% Excellent']++;else if(sc>=70)ranges['70-89% Good']++;else if(sc>=50)ranges['50-69% Average']++;else if(sc>=30)ranges['30-49% Weak']++;else ranges['0-29% Critical']++; });
+  if(chartRanges) chartRanges.destroy();
+  chartRanges = new Chart(document.getElementById('chartRanges'), {
+    type:'bar',
+    data:{ labels:Object.keys(ranges), datasets:[{ label:'Students', data:Object.values(ranges), backgroundColor:['#10b981','#06b6d4','#f59e0b','#ef4444','#dc2626'], borderRadius:8, borderSkipped:false }] },
+    options:{ indexAxis:'y', responsive:true, plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>ctx.parsed.x+' student'+(ctx.parsed.x!==1?'s':'')}}}, scales:{ x:{title:{display:true,text:'Students',color:'#64748b'},ticks:{color:'#64748b',stepSize:1},grid:{color:'#1e1e2e'}}, y:{ticks:{color:'#e2e8f0',font:{size:11}},grid:{display:false}} } }
+  });
+
+  // Weak areas — shows how many students are weak in each skill area
+  const weakCount = {};
+  students.forEach(s => (s.weakAreas||[]).forEach(w => { weakCount[w] = (weakCount[w]||0)+1; }));
+  const sortedWeak = Object.entries(weakCount).sort((a,b)=>b[1]-a[1]).slice(0,6);
+  if(chartWeakAreas) chartWeakAreas.destroy();
+  chartWeakAreas = new Chart(document.getElementById('chartWeakAreas'), {
+    type:'bar',
+    data:{ labels:sortedWeak.map(w=>w[0].replace(' & ','/')), datasets:[{ label:'Students struggling', data:sortedWeak.map(w=>w[1]), backgroundColor:'rgba(239,68,68,0.7)', borderRadius:6, borderSkipped:false }] },
+    options:{ responsive:true, plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>ctx.parsed.y+' students need to improve this'}}}, scales:{ y:{title:{display:true,text:'Students',color:'#64748b'},ticks:{color:'#64748b',stepSize:1},grid:{color:'#1e1e2e'}}, x:{ticks:{color:'#64748b',maxRotation:45,font:{size:10}},grid:{display:false}} } }
+  });
+
+  // Match rate — pie chart showing how many companies match each student
+  const matchBuckets = { 'High (8+)':0, 'Medium (4-7)':0, 'Low (0-3)':0 };
+  students.forEach(s => { const m=s.matchedCompanies||0; if(m>=8)matchBuckets['High (8+)']++;else if(m>=4)matchBuckets['Medium (4-7)']++;else matchBuckets['Low (0-3)']++; });
+  const matchVals = Object.values(matchBuckets);
+  const matchLabels = [
+    `High 8+ matches (${matchVals[0]} students)`,
+    `Medium 4-7 matches (${matchVals[1]} students)`,
+    `Low 0-3 matches (${matchVals[2]} students)`
+  ];
+  if(chartMatchRate) chartMatchRate.destroy();
+  chartMatchRate = new Chart(document.getElementById('chartMatchRate'), {
+    type:'doughnut',
+    data:{ labels:matchLabels, datasets:[{ data:matchVals, backgroundColor:['#10b981','#f59e0b','#ef4444'], borderWidth:0, hoverOffset:8 }] },
+    options:{ responsive:true, plugins:{legend:{position:'bottom',labels:{color:'#e2e8f0',padding:10,font:{size:11},usePointStyle:true,pointStyle:'circle'}},tooltip:{callbacks:{label:ctx=>ctx.label}}} }
+  });
+
+  // Section completion — radar showing average completion across all students per checklist section
+  const sectionTotals = {};
+  students.forEach(s => {
+    const details = s.checklistDetails || {};
+    // Use actual data if available
+    if(Object.keys(details).length > 0) {
+      Object.entries(details).forEach(([k,v]) => {
+        if(!sectionTotals[k]) sectionTotals[k]={total:0,count:0};
+        sectionTotals[k].total += v.pct||0;
+        sectionTotals[k].count++;
+      });
+    }
+  });
+
+  // Fallback sections if no data found
+  if(Object.keys(sectionTotals).length === 0) {
+    const defaultSections = ['Resume & Profile','DSA Milestones','CS Fundamentals','Aptitude & Mock Tests','Interview Readiness'];
+    defaultSections.forEach(sec => { sectionTotals[sec] = {total:0, count:1}; });
+  }
+
+  const sectionAvgs = Object.entries(sectionTotals).map(([k,v])=>({ label:k.replace(/[^\w\s&]/g,'').trim(), avg:Math.round(v.total/v.count) }));
+  if(chartSections) chartSections.destroy();
+  chartSections = new Chart(document.getElementById('chartSections'), {
+    type:'radar',
+    data:{ labels:sectionAvgs.map(s=>s.label), datasets:[{ label:'Avg Completion %', data:sectionAvgs.map(s=>s.avg), backgroundColor:'rgba(124,58,237,0.2)', borderColor:'#7c3aed', pointBackgroundColor:'#7c3aed', pointRadius:5 }] },
+    options:{ responsive:true, scales:{ r:{ beginAtZero:true, max:100, ticks:{color:'#64748b',backdropColor:'transparent',stepSize:20}, grid:{color:'#1e1e2e'}, pointLabels:{color:'#e2e8f0',font:{size:11}} } }, plugins:{legend:{labels:{color:'#e2e8f0'}},tooltip:{callbacks:{label:ctx=>ctx.parsed.r+'% average completion'}}} }
+  });
+}
+
+// =============================================
+// STUDENTS TABLE
+// =============================================
+let allStudentsCache = [];
+
+function renderStudents() {
+  allStudentsCache = getAllStudents().sort((a,b)=>(b.resumeScore||0)-(a.resumeScore||0));
+  renderStudentRows(allStudentsCache);
+}
+
+function renderStudentRows(list) {
+  const tbody = document.getElementById('studentTableBody');
+  tbody.innerHTML = list.map(s => {
+    const sc = s.resumeScore||0;
+    const cl = s.checklistProgress||0;
+    const scoreClass = sc>=70?'score-high':sc>=40?'score-mid':'score-low';
+    const clColor = cl>=70?'var(--accent4)':cl>=40?'var(--accent3)':'var(--danger)';
+    const status = sc>=70&&cl>=60 ? '<span style="color:var(--accent4);font-size:0.78rem">✅ Ready</span>' : sc>0 ? '<span style="color:var(--accent3);font-size:0.78rem">⚡ In Progress</span>' : '<span style="color:var(--muted);font-size:0.78rem">⏳ Not Started</span>';
+    return `<tr onclick="showStudentDetail('${s.id}')" style="cursor:pointer">
+      <td><strong>${s.name}</strong><br><span style="font-size:0.72rem;color:var(--muted)">${s.email}</span></td>
+      <td>${s.branch}</td><td>${s.cgpa}</td>
+      <td><span class="score-badge ${scoreClass}">${sc}%</span></td>
+      <td><div class="mini-progress"><div class="mini-progress-fill" style="width:${cl}%;background:${clColor}"></div></div>${cl}%</td>
+      <td>${s.matchedCompanies||0}</td><td>${status}</td>
+      <td style="color:var(--accent2);font-size:0.8rem">View →</td></tr>`;
+  }).join('');
+}
+
+function filterStudents(q) {
+  const filtered = allStudentsCache.filter(s => s.name.toLowerCase().includes(q.toLowerCase()) || s.branch.toLowerCase().includes(q.toLowerCase()));
+  renderStudentRows(filtered);
+}
+
+// =============================================
+// STUDENT DETAIL MODAL
+// =============================================
+function showStudentDetail(id) {
+  const s = JSON.parse(localStorage.getItem('student_profile_' + id));
+  if(!s) return;
+  const sc = s.resumeScore||0;
+  const scoreColor = sc>=75?'var(--accent4)':sc>=50?'var(--accent3)':'var(--danger)';
+
+  let sectionsHTML = '';
+  Object.entries(s.checklistDetails||{}).forEach(([name, data]) => {
+    const pct = data.pct||0;
+    const color = pct>=70?'var(--accent4)':pct>=40?'var(--accent3)':'var(--danger)';
+    sectionsHTML += `<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;font-size:0.82rem;margin-bottom:4px"><span>${name}</span><span style="color:${color};font-weight:600">${data.done}/${data.total} (${pct}%)</span></div><div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden"><div style="height:100%;width:${pct}%;background:${color};border-radius:3px;transition:width 0.5s"></div></div></div>`;
+  });
+
+  let weakHTML = (s.weakAreas||[]).map(w => `<span style="display:inline-block;padding:4px 10px;margin:3px;border-radius:6px;font-size:0.78rem;background:rgba(239,68,68,0.12);color:var(--danger);border:1px solid rgba(239,68,68,0.25)">🔴 ${w}</span>`).join('');
+  let strongHTML = (s.strongAreas||[]).map(w => `<span style="display:inline-block;padding:4px 10px;margin:3px;border-radius:6px;font-size:0.78rem;background:rgba(16,185,129,0.12);color:var(--accent4);border:1px solid rgba(16,185,129,0.25)">✅ ${w}</span>`).join('');
+
+  document.getElementById('modalContent').innerHTML = `
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px">
+      <div style="width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:1.3rem;font-weight:700;color:white">${s.name.charAt(0)}</div>
+      <div><h2 style="font-family:'Syne',sans-serif;font-size:1.3rem">${s.name}</h2><p style="color:var(--muted);font-size:0.85rem">${s.email} · ${s.branch} · CGPA: ${s.cgpa}</p></div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px">
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center"><div style="font-size:0.75rem;color:var(--muted);margin-bottom:6px">Resume Score</div><div style="font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;color:${scoreColor}">${sc}%</div></div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center"><div style="font-size:0.75rem;color:var(--muted);margin-bottom:6px">Checklist</div><div style="font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;color:${(s.checklistProgress||0)>=60?'var(--accent4)':'var(--accent3)'}">${s.checklistProgress||0}%</div></div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center"><div style="font-size:0.75rem;color:var(--muted);margin-bottom:6px">Matched Companies</div><div style="font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;color:var(--accent2)">${s.matchedCompanies||0}</div></div>
+    </div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:16px"><h3 style="font-family:'Syne',sans-serif;font-size:1rem;margin-bottom:14px">📋 Section-wise Progress</h3>${sectionsHTML || '<p style="color:var(--muted);font-size:0.85rem">No checklist data yet.</p>'}</div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:16px"><h3 style="font-family:'Syne',sans-serif;font-size:1rem;margin-bottom:14px">🔴 Areas to Improve</h3>${weakHTML || '<p style="color:var(--accent4);font-size:0.85rem">No weak areas — great!</p>'}</div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px"><h3 style="font-family:'Syne',sans-serif;font-size:1rem;margin-bottom:14px">💪 Strong Areas</h3>${strongHTML || '<p style="color:var(--muted);font-size:0.85rem">Not yet analyzed.</p>'}</div>
+    <p style="font-size:0.72rem;color:var(--muted);margin-top:16px;text-align:center">Last active: ${s.lastActive ? new Date(s.lastActive).toLocaleString() : 'N/A'} · Registered: ${s.registeredAt ? new Date(s.registeredAt).toLocaleDateString() : 'N/A'}</p>`;
+  document.getElementById('studentModal').classList.add('active');
+}
+
+function closeModal() { document.getElementById('studentModal').classList.remove('active'); }
+document.getElementById('studentModal').addEventListener('click', e => { if(e.target === e.currentTarget) closeModal(); });
+
+// =============================================
+// INIT & AUTO-REFRESH
+// =============================================
+renderOverview();
+setInterval(() => {
+  const activePanel = document.querySelector('.panel.active');
+  if(activePanel.id === 'panel-overview') renderOverview();
+  else if(activePanel.id === 'panel-students') renderStudents();
+  else if(activePanel.id === 'panel-analytics') renderAnalytics();
+  document.getElementById('lastUpdated').textContent = 'Updated: ' + new Date().toLocaleTimeString();
+}, 5000);
+</script>
+</body>
+</html>

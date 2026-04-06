@@ -3,48 +3,49 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ABES Placement Prep 2025 — Aman's Battle Plan</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<title>ABES Placement Prep 2025</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <style>
   :root {
-    --bg: #0a0a0f;
-    --surface: #111118;
-    --card: #16161f;
-    --border: #1e1e2e;
-    --accent: #7c3aed;
-    --accent2: #06b6d4;
-    --accent3: #f59e0b;
-    --accent4: #10b981;
-    --danger: #ef4444;
-    --text: #e2e8f0;
-    --muted: #64748b;
-    --highlight: #c4b5fd;
+    --bg: #000000; --surface: #0a0a0a; --card: #111111; --card2: #151515;
+    --border: #1a1a1a; --border2: #222222;
+    --accent: #6d28d9; --accent2: #06b6d4; --accent3: #f59e0b; --accent4: #10b981;
+    --danger: #ef4444; --text: #ffffff; --muted: #888888; --highlight: #c4b5fd;
+    --accent-glow: rgba(109,40,217,0.25); --cyan-glow: rgba(6,182,212,0.2);
+    --green-glow: rgba(16,185,129,0.2); --amber-glow: rgba(245,158,11,0.2);
   }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
+  [data-theme="light"] {
+    --bg: #f8f9ff; --surface: #ffffff; --card: #ffffff; --card2: #f0f2ff;
+    --border: #e2e8f0; --border2: #cbd5e1; --text: #0f172a; --muted: #64748b;
+    --highlight: #6d28d9; --accent: #6d28d9;
+    --accent-glow: rgba(109,40,217,0.08); --cyan-glow: rgba(6,182,212,0.08);
+    --green-glow: rgba(16,185,129,0.08); --amber-glow: rgba(245,158,11,0.08);
+  }
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
   body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'DM Sans', sans-serif;
-    min-height: 100vh;
-    overflow-x: hidden;
+    background: var(--bg); color: var(--text);
+    font-family: 'Inter', system-ui, sans-serif;
+    min-height: 100vh; overflow-x: hidden;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    -webkit-font-smoothing: antialiased;
   }
-
-  /* Grid background */
   body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
+    content: ''; position: fixed; inset: 0;
+    background:
+      radial-gradient(ellipse 80% 50% at 20% -10%, rgba(109,40,217,0.12) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at 80% 110%, rgba(6,182,212,0.08) 0%, transparent 60%);
+    pointer-events: none; z-index: 0;
+  }
+  body::after {
+    content: ''; position: fixed; inset: 0;
     background-image:
-      linear-gradient(rgba(124,58,237,0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(124,58,237,0.03) 1px, transparent 1px);
-    background-size: 40px 40px;
-    pointer-events: none;
-    z-index: 0;
+      linear-gradient(rgba(109,40,217,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(109,40,217,0.04) 1px, transparent 1px);
+    background-size: 48px 48px; pointer-events: none; z-index: 0;
   }
 
-  .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 32px; position: relative; z-index: 1; }
 
   /* Header */
   header {
@@ -56,10 +57,10 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    background: rgba(124,58,237,0.15);
-    border: 1px solid rgba(124,58,237,0.3);
+    background: rgba(109,40,217,0.15);
+    border: 1px solid rgba(109,40,217,0.3);
     color: var(--highlight);
-    font-family: 'Space Mono', monospace;
+    font-family: 'JetBrains Mono', monospace;
     font-size: 11px;
     padding: 4px 12px;
     border-radius: 100px;
@@ -67,9 +68,9 @@
   }
 
   h1 {
-    font-family: 'Syne', sans-serif;
+    font-family: 'Inter', system-ui, sans-serif;
     font-size: clamp(2rem, 5vw, 3.5rem);
-    font-weight: 800;
+    font-weight: 900;
     line-height: 1.1;
     background: linear-gradient(135deg, #fff 0%, var(--highlight) 50%, var(--accent2) 100%);
     -webkit-background-clip: text;
@@ -85,606 +86,311 @@
     line-height: 1.6;
   }
 
+  .theme-toggle {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    cursor: pointer;
+    padding: 8px 12px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+
+  .theme-toggle:hover {
+    background: var(--border);
+  }
+
   /* Stats bar */
   .stats-bar {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1px;
-    background: var(--border);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    margin: 32px 0;
-    overflow: hidden;
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 12px; margin: 0 0 28px;
   }
-
   .stat {
-    background: var(--surface);
-    padding: 20px;
-    text-align: center;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 14px; padding: 20px;
+    transition: all 0.25s;
   }
-
+  .stat:hover { border-color: var(--border2); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.2); }
   .stat .num {
-    font-family: 'Syne', sans-serif;
-    font-size: 1.8rem;
-    font-weight: 800;
-    color: var(--highlight);
-    display: block;
+    font-size: 1.8rem; font-weight: 900; letter-spacing: -0.04em;
+    background: linear-gradient(135deg, var(--text), var(--highlight));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text; display: block; margin-bottom: 4px;
   }
-
-  .stat .label {
-    font-size: 0.7rem;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-top: 4px;
-  }
+  .stat .label { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; }
 
   /* Nav tabs */
-  .tabs {
-    display: flex;
-    gap: 4px;
-    background: var(--surface);
-    padding: 6px;
-    border-radius: 12px;
-    border: 1px solid var(--border);
-    margin-bottom: 32px;
-    flex-wrap: wrap;
-  }
-
+  .tabs { display: none; }
   .tab-btn {
-    flex: 1;
-    min-width: 100px;
-    padding: 10px 16px;
-    background: transparent;
-    border: none;
-    color: var(--muted);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.85rem;
-    font-weight: 500;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.2s;
-    white-space: nowrap;
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 14px; background: transparent; border: none;
+    color: var(--muted); font-family: 'Inter', system-ui, sans-serif;
+    font-size: 0.875rem; font-weight: 500; border-radius: 10px;
+    cursor: pointer; transition: all 0.2s; white-space: nowrap;
+    text-decoration: none; letter-spacing: -0.01em;
   }
-
-  .tab-btn.active {
-    background: var(--accent);
-    color: white;
-  }
-
-  .tab-btn:hover:not(.active) {
-    background: var(--border);
-    color: var(--text);
-  }
+  .tab-btn.active { background: linear-gradient(135deg, var(--accent), #4c1d95); color: white; box-shadow: 0 4px 16px var(--accent-glow); }
+  .tab-btn:hover:not(.active) { background: rgba(109,40,217,0.07); color: var(--text); }
 
   /* Sections */
   .section { display: none; }
   .section.active { display: block; animation: fadeIn 0.3s ease; }
-
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
   .section-title {
-    font-family: 'Syne', sans-serif;
-    font-size: 1.4rem;
-    font-weight: 700;
-    margin-bottom: 20px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    font-size: 1.15rem; font-weight: 800; letter-spacing: -0.03em;
+    margin-bottom: 18px; display: flex; align-items: center; gap: 10px;
   }
-
-  .section-title .icon { font-size: 1.2rem; }
+  .section-title .icon { font-size: 1.1rem; }
 
   /* Company cards */
-  .company-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 16px;
-    margin-bottom: 32px;
-  }
-
-  .company-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 20px;
-    transition: border-color 0.2s, transform 0.2s;
-    cursor: pointer;
-  }
-
-  .company-card:hover {
-    border-color: var(--accent);
-    transform: translateY(-2px);
-  }
-
+  .company-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; margin-bottom: 28px; }
+  .company-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 20px; transition: all 0.25s cubic-bezier(0.4,0,0.2,1); cursor: pointer; }
+  .company-card:hover { border-color: var(--border2); transform: translateY(-3px); box-shadow: 0 12px 36px rgba(0,0,0,0.25); }
   .company-card.dream { border-left: 3px solid var(--accent3); }
   .company-card.mass { border-left: 3px solid var(--accent4); }
   .company-card.super { border-left: 3px solid var(--accent); }
-
-  .company-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 12px;
-  }
-
-  .company-name {
-    font-family: 'Syne', sans-serif;
-    font-size: 1.1rem;
-    font-weight: 700;
-  }
-
-  .package-badge {
-    font-family: 'Space Mono', monospace;
-    font-size: 0.7rem;
-    padding: 4px 8px;
-    border-radius: 6px;
-    font-weight: 700;
-  }
-
-  .badge-gold { background: rgba(245,158,11,0.15); color: var(--accent3); border: 1px solid rgba(245,158,11,0.3); }
-  .badge-green { background: rgba(16,185,129,0.15); color: var(--accent4); border: 1px solid rgba(16,185,129,0.3); }
-  .badge-purple { background: rgba(124,58,237,0.15); color: var(--highlight); border: 1px solid rgba(124,58,237,0.3); }
-
-  .company-tag {
-    font-size: 0.72rem;
-    color: var(--muted);
-    background: var(--surface);
-    border: 1px solid var(--border);
-    padding: 2px 8px;
-    border-radius: 4px;
-    display: inline-block;
-    margin-right: 4px;
-    margin-bottom: 4px;
-  }
-
-  .rounds-list {
-    margin-top: 12px;
-  }
-
-  .round-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    padding: 8px 0;
-    border-bottom: 1px solid var(--border);
-    font-size: 0.82rem;
-    line-height: 1.5;
-  }
-
+  .company-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+  .company-name { font-size: 1rem; font-weight: 700; letter-spacing: -0.02em; }
+  .package-badge { font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; padding: 3px 8px; border-radius: 6px; font-weight: 700; }
+  .badge-gold { background: var(--amber-glow); color: var(--accent3); border: 1px solid rgba(245,158,11,0.3); }
+  .badge-green { background: var(--green-glow); color: var(--accent4); border: 1px solid rgba(16,185,129,0.3); }
+  .badge-purple { background: var(--accent-glow); color: var(--highlight); border: 1px solid rgba(109,40,217,0.3); }
+  .company-tag { font-size: 0.68rem; color: var(--muted); background: var(--surface); border: 1px solid var(--border); padding: 2px 8px; border-radius: 4px; display: inline-block; margin-right: 4px; margin-bottom: 4px; }
+  .rounds-list { margin-top: 12px; }
+  .round-item { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 0.8rem; line-height: 1.5; }
   .round-item:last-child { border-bottom: none; }
-
-  .round-num {
-    background: var(--accent);
-    color: white;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.65rem;
-    font-weight: 700;
-    flex-shrink: 0;
-    margin-top: 1px;
-  }
+  .round-num { background: var(--accent); color: white; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.62rem; font-weight: 700; flex-shrink: 0; margin-top: 1px; }
 
   /* Topic cards */
-  .topic-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 16px;
-  }
-
-  .topic-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 20px;
-  }
-
-  .topic-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 14px;
-  }
-
-  .topic-icon {
-    width: 36px;
-    height: 36px;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.1rem;
-    flex-shrink: 0;
-  }
-
-  .topic-name {
-    font-family: 'Syne', sans-serif;
-    font-weight: 700;
-    font-size: 0.95rem;
-  }
-
-  .topic-sub {
-    font-size: 0.72rem;
-    color: var(--muted);
-    margin-top: 2px;
-  }
-
-  .subtopic-list {
-    list-style: none;
-  }
-
-  .subtopic-list li {
-    font-size: 0.8rem;
-    color: var(--muted);
-    padding: 5px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.04);
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-
-  .subtopic-list li::before {
-    content: '→';
-    color: var(--accent2);
-    font-size: 0.7rem;
-    flex-shrink: 0;
-  }
-
+  .topic-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
+  .topic-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 20px; transition: all 0.25s; }
+  .topic-card:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,0,0,0.2); border-color: var(--border2); }
+  .topic-header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+  .topic-icon { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
+  .topic-name { font-size: 0.9rem; font-weight: 700; letter-spacing: -0.02em; }
+  .topic-sub { font-size: 0.7rem; color: var(--muted); margin-top: 2px; }
+  .subtopic-list { list-style: none; }
+  .subtopic-list li { font-size: 0.78rem; color: var(--muted); padding: 5px 0; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 6px; }
+  .subtopic-list li::before { content: '→'; color: var(--accent2); font-size: 0.68rem; flex-shrink: 0; }
   .subtopic-list li:last-child { border-bottom: none; }
-
-  /* Priority indicator */
-  .priority {
-    font-size: 0.65rem;
-    margin-left: auto;
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-weight: 600;
-    flex-shrink: 0;
-  }
-
-  .p-high { background: rgba(239,68,68,0.15); color: #f87171; }
-  .p-med { background: rgba(245,158,11,0.15); color: #fbbf24; }
-  .p-low { background: rgba(16,185,129,0.15); color: #34d399; }
+  .priority { font-size: 0.62rem; margin-left: auto; padding: 2px 6px; border-radius: 4px; font-weight: 700; flex-shrink: 0; }
+  .p-high { background: rgba(239,68,68,0.12); color: #f87171; }
+  .p-med { background: rgba(245,158,11,0.12); color: #fbbf24; }
+  .p-low { background: rgba(16,185,129,0.12); color: #34d399; }
 
   /* Roadmap timeline */
-  .timeline {
-    position: relative;
-    padding-left: 32px;
-  }
-
-  .timeline::before {
-    content: '';
-    position: absolute;
-    left: 10px;
-    top: 0;
-    bottom: 0;
-    width: 2px;
-    background: linear-gradient(to bottom, var(--accent), var(--accent2));
-  }
-
-  .timeline-item {
-    position: relative;
-    margin-bottom: 28px;
-  }
-
-  .timeline-dot {
-    position: absolute;
-    left: -26px;
-    top: 4px;
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    border: 2px solid var(--accent);
-    background: var(--bg);
-  }
-
-  .timeline-week {
-    font-family: 'Space Mono', monospace;
-    font-size: 0.7rem;
-    color: var(--accent2);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 6px;
-  }
-
-  .timeline-title {
-    font-family: 'Syne', sans-serif;
-    font-weight: 700;
-    font-size: 1rem;
-    margin-bottom: 8px;
-  }
-
-  .timeline-tasks {
-    list-style: none;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-  }
-
-  .timeline-tasks li {
-    font-size: 0.78rem;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    padding: 4px 10px;
-    border-radius: 6px;
-    color: var(--muted);
-  }
+  .timeline { position: relative; padding-left: 32px; }
+  .timeline::before { content: ''; position: absolute; left: 10px; top: 0; bottom: 0; width: 2px; background: linear-gradient(to bottom, var(--accent), var(--accent2)); border-radius: 2px; }
+  .timeline-item { position: relative; margin-bottom: 28px; }
+  .timeline-dot { position: absolute; left: -26px; top: 4px; width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--accent); background: var(--bg); }
+  .timeline-week { font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; color: var(--accent2); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 6px; }
+  .timeline-title { font-size: 0.95rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 8px; }
+  .timeline-tasks { list-style: none; display: flex; flex-wrap: wrap; gap: 6px; }
+  .timeline-tasks li { font-size: 0.75rem; background: var(--surface); border: 1px solid var(--border); padding: 4px 10px; border-radius: 6px; color: var(--muted); }
 
   /* Resources section */
-  .resources-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 16px;
-  }
-
-  .resource-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 20px;
-  }
-
-  .resource-platform {
-    font-family: 'Space Mono', monospace;
-    font-size: 0.7rem;
-    color: var(--accent2);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 6px;
-  }
-
-  .resource-title {
-    font-family: 'Syne', sans-serif;
-    font-weight: 700;
-    margin-bottom: 8px;
-  }
-
-  .resource-desc {
-    font-size: 0.8rem;
-    color: var(--muted);
-    line-height: 1.5;
-  }
+  .resources-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
+  .resource-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 20px; transition: all 0.25s; }
+  .resource-card:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,0,0,0.2); border-color: rgba(6,182,212,0.3); }
+  .resource-platform { font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; color: var(--accent2); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 6px; }
+  .resource-title { font-size: 0.9rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 8px; }
+  .resource-desc { font-size: 0.78rem; color: var(--muted); line-height: 1.5; }
 
   /* Progress tracker */
-  .tracker-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 12px;
-    margin-bottom: 24px;
-  }
-
-  .tracker-item {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 16px;
-  }
-
-  .tracker-label {
-    font-size: 0.75rem;
-    color: var(--muted);
-    margin-bottom: 8px;
-    display: flex;
-    justify-content: space-between;
-  }
-
-  .progress-bar {
-    height: 4px;
-    background: var(--border);
-    border-radius: 2px;
-    overflow: hidden;
-  }
-
-  .progress-fill {
-    height: 100%;
-    border-radius: 2px;
-    transition: width 0.8s ease;
-  }
+  .tracker-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin-bottom: 24px; }
+  .tracker-item { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
+  .tracker-label { font-size: 0.72rem; color: var(--muted); margin-bottom: 8px; display: flex; justify-content: space-between; font-weight: 500; }
+  .progress-bar { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 2px; transition: width 0.8s ease; }
 
   /* Checklist */
-  .checklist {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 20px;
-    margin-bottom: 20px;
-  }
-
-  .checklist h3 {
-    font-family: 'Syne', sans-serif;
-    font-weight: 700;
-    margin-bottom: 14px;
-    font-size: 1rem;
-  }
-
-  .check-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    padding: 8px 0;
-    border-bottom: 1px solid var(--border);
-    cursor: pointer;
-  }
-
+  .checklist { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 20px; margin-bottom: 16px; }
+  .checklist h3 { font-size: 0.9rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 14px; }
+  .check-item { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); cursor: pointer; }
   .check-item:last-child { border-bottom: none; }
-
-  .check-box {
-    width: 18px;
-    height: 18px;
-    border: 2px solid var(--muted);
-    border-radius: 4px;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s;
-    margin-top: 1px;
-  }
-
-  .check-box.checked {
-    background: var(--accent4);
-    border-color: var(--accent4);
-  }
-
+  .check-box { width: 18px; height: 18px; border: 2px solid var(--border2); border-radius: 5px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.2s; margin-top: 1px; }
+  .check-box.checked { background: var(--accent4); border-color: var(--accent4); }
   .check-box.checked::after { content: '✓'; color: white; font-size: 11px; font-weight: 700; }
-
-  .check-text { font-size: 0.83rem; line-height: 1.5; }
+  .check-text { font-size: 0.82rem; line-height: 1.5; }
   .check-text.done { text-decoration: line-through; color: var(--muted); }
 
   /* Divider */
-  .divider {
-    height: 1px;
-    background: var(--border);
-    margin: 32px 0;
-  }
+  .divider { height: 1px; background: var(--border); margin: 28px 0; }
 
   /* Eligibility warning */
-  .warning-box {
-    background: rgba(245,158,11,0.08);
-    border: 1px solid rgba(245,158,11,0.25);
-    border-radius: 12px;
-    padding: 16px 20px;
-    margin-bottom: 20px;
-    font-size: 0.85rem;
-    line-height: 1.6;
-  }
-
+  .warning-box { background: var(--amber-glow); border: 1px solid rgba(245,158,11,0.25); border-radius: 12px; padding: 14px 18px; margin-bottom: 18px; font-size: 0.83rem; line-height: 1.6; }
   .warning-box strong { color: var(--accent3); }
-
-  .info-box {
-    background: rgba(6,182,212,0.06);
-    border: 1px solid rgba(6,182,212,0.2);
-    border-radius: 12px;
-    padding: 16px 20px;
-    margin-bottom: 20px;
-    font-size: 0.85rem;
-    line-height: 1.6;
-  }
-
+  .info-box { background: var(--cyan-glow); border: 1px solid rgba(6,182,212,0.2); border-radius: 12px; padding: 14px 18px; margin-bottom: 18px; font-size: 0.83rem; line-height: 1.6; }
   .info-box strong { color: var(--accent2); }
 
   /* Accordion */
-  .accordion { margin-bottom: 20px; }
-
-  .accordion-item {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    margin-bottom: 8px;
-    overflow: hidden;
-  }
-
-  .accordion-header {
-    padding: 16px 20px;
-    cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-weight: 600;
-    font-size: 0.9rem;
-  }
-
-  .accordion-header:hover { background: rgba(255,255,255,0.02); }
-
-  .accordion-arrow {
-    color: var(--muted);
-    transition: transform 0.2s;
-    font-size: 0.8rem;
-  }
-
+  .accordion { margin-bottom: 18px; }
+  .accordion-item { background: var(--card); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 8px; overflow: hidden; }
+  .accordion-header { padding: 15px 18px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-weight: 600; font-size: 0.875rem; letter-spacing: -0.01em; }
+  .accordion-header:hover { background: rgba(109,40,217,0.04); }
+  .accordion-arrow { color: var(--muted); transition: transform 0.2s; font-size: 0.75rem; }
   .accordion-item.open .accordion-arrow { transform: rotate(180deg); }
-
-  .accordion-body {
-    display: none;
-    padding: 0 20px 16px;
-    font-size: 0.83rem;
-    color: var(--muted);
-    line-height: 1.7;
-    border-top: 1px solid var(--border);
-    padding-top: 16px;
-  }
-
+  .accordion-body { display: none; padding: 0 18px 16px; font-size: 0.8rem; color: var(--muted); line-height: 1.7; border-top: 1px solid var(--border); padding-top: 14px; }
   .accordion-item.open .accordion-body { display: block; }
 
   /* Code block */
-  .code-snippet {
-    background: #0d0d14;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 12px 16px;
-    font-family: 'Space Mono', monospace;
-    font-size: 0.75rem;
-    color: #a5f3fc;
-    margin-top: 10px;
-    overflow-x: auto;
-    line-height: 1.6;
-  }
+  .code-snippet { background: #000000; border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: #a5f3fc; margin-top: 10px; overflow-x: auto; line-height: 1.7; }
+  [data-theme="light"] .code-snippet { background: #1e1e2e; }
 
-  footer {
-    padding: 40px 0;
-    text-align: center;
-    color: var(--muted);
-    font-size: 0.78rem;
-    border-top: 1px solid var(--border);
-    margin-top: 40px;
-    font-family: 'Space Mono', monospace;
-  }
+  footer { padding: 36px 0; text-align: center; color: var(--muted); font-size: 0.72rem; border-top: 1px solid var(--border); margin-top: 40px; font-family: 'JetBrains Mono', monospace; }
 
   @media (max-width: 600px) {
     .stats-bar { grid-template-columns: repeat(2, 1fr); }
-    .tabs { flex-direction: column; }
-    .tab-btn { flex: none; }
+    .top-header { padding: 14px 20px; }
   }
+
+  /* Dashboard Architecture */
+  .dashboard-layout { display: flex; height: 100vh; overflow: hidden; }
+  .sidebar { width: 260px; flex-shrink: 0; background: rgba(0,0,0,0.95); backdrop-filter: blur(24px) saturate(180%); -webkit-backdrop-filter: blur(24px) saturate(180%); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 24px 0; overflow-y: auto; z-index: 20; }
+  [data-theme="light"] .sidebar { background: rgba(248,249,255,0.88); border-right: 1px solid var(--border); }
+  .sidebar-header { padding: 0 20px; margin-bottom: 28px; }
+  .nav-links { display: flex; flex-direction: column; gap: 2px; padding: 0 10px; }
+  .nav-links .tab-btn { justify-content: flex-start; text-align: left; padding: 11px 14px; border-radius: 10px; width: 100%; font-size: 0.875rem; transition: all 0.2s cubic-bezier(0.4,0,0.2,1); position: relative; overflow: hidden; letter-spacing: -0.01em; }
+  .nav-links .tab-btn:hover:not(.active) { transform: translateX(3px); background: rgba(109,40,217,0.07); color: var(--text); }
+  .nav-links .tab-btn.active { background: linear-gradient(135deg, var(--accent), #4c1d95); box-shadow: 0 4px 16px var(--accent-glow); color: white; }
+  .main-wrapper { flex: 1; display: flex; flex-direction: column; overflow-y: auto; position: relative; }
+  .top-header { padding: 16px 36px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); background: rgba(0,0,0,0.9); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); position: sticky; top: 0; z-index: 10; }
+  [data-theme="light"] .top-header { background: rgba(248,249,255,0.8); }
+  .global-progress-box { margin-top: auto; padding: 20px; border-top: 1px solid var(--border); }
+
+  /* ===== RESUME ANALYZER STYLES ===== */
+  .resume-upload-zone {
+    border: 2px dashed rgba(109,40,217,0.3); border-radius: 16px;
+    padding: 48px 32px; text-align: center; cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+    background: rgba(109,40,217,0.02); position: relative; overflow: hidden;
+  }
+  .resume-upload-zone::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at center, rgba(109,40,217,0.06) 0%, transparent 70%); opacity: 0; transition: opacity 0.3s; }
+  .resume-upload-zone:hover, .resume-upload-zone.drag-over { border-color: var(--accent); background: var(--accent-glow); transform: scale(1.01); box-shadow: 0 0 40px var(--accent-glow); }
+  .resume-upload-zone:hover::before, .resume-upload-zone.drag-over::before { opacity: 1; }
+  .resume-upload-zone .upload-icon { font-size: 3rem; margin-bottom: 16px; display: block; animation: floatIcon 3s ease-in-out infinite; }
+  @keyframes floatIcon { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+  .resume-upload-zone h3 { font-size: 1rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 8px; color: var(--text); }
+  .resume-upload-zone p { color: var(--muted); font-size: 0.83rem; }
+  .resume-file-name { margin-top: 12px; font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: var(--accent2); display: none; align-items: center; justify-content: center; gap: 6px; }
+  .resume-file-name.visible { display: flex; }
+  .resume-analyze-btn { margin-top: 20px; padding: 13px 36px; border: none; border-radius: 12px; background: linear-gradient(135deg, var(--accent), #4c1d95); color: white; font-family: 'Inter', system-ui, sans-serif; font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 20px var(--accent-glow); display: none; }
+  .resume-analyze-btn.visible { display: inline-flex; align-items: center; gap: 8px; }
+  .resume-analyze-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 28px var(--accent-glow); }
+  .resume-analyze-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+  .resume-results { margin-top: 28px; display: none; animation: fadeIn 0.5s ease; }
+  .resume-results.visible { display: block; }
+  .result-glass-card { background: rgba(17,17,17,0.8); backdrop-filter: blur(16px) saturate(180%); -webkit-backdrop-filter: blur(16px) saturate(180%); border: 1px solid rgba(109,40,217,0.15); border-radius: 16px; padding: 22px; margin-bottom: 14px; transition: all 0.25s; }
+  [data-theme="light"] .result-glass-card { background: rgba(255,255,255,0.8); border-color: rgba(109,40,217,0.12); }
+  .result-glass-card:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(109,40,217,0.1); }
+  .result-glass-card h4 { font-size: 0.9rem; font-weight: 700; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+  .skill-bar-container { margin-bottom: 12px; }
+  .skill-bar-label { display: flex; justify-content: space-between; font-size: 0.78rem; margin-bottom: 5px; color: var(--muted); }
+  .skill-bar-label .skill-name { color: var(--text); font-weight: 500; }
+  .skill-bar { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+  .skill-bar-fill { height: 100%; border-radius: 3px; transition: width 1s cubic-bezier(0.4,0,0.2,1); background: linear-gradient(90deg, var(--accent), var(--accent2)); }
+  .matched-companies-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .matched-company-chip { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 100px; font-size: 0.8rem; font-weight: 500; border: 1px solid; transition: all 0.2s; cursor: default; }
+  .matched-company-chip:hover { transform: scale(1.04); }
+  .chip-super { background: var(--accent-glow); border-color: rgba(109,40,217,0.3); color: var(--highlight); }
+  .chip-dream { background: var(--amber-glow); border-color: rgba(245,158,11,0.3); color: var(--accent3); }
+  .chip-mass { background: var(--green-glow); border-color: rgba(16,185,129,0.3); color: var(--accent4); }
+  .resume-score-circle { width: 120px; height: 120px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0 auto 20px; position: relative; }
+  .resume-score-circle .score-num { font-size: 2.2rem; font-weight: 900; letter-spacing: -0.04em; line-height: 1; }
+  .resume-score-circle .score-label { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 4px; }
+  .extracted-text-box { background: rgba(0,0,0,0.8); border: 1px solid var(--border); border-radius: 10px; padding: 14px; max-height: 200px; overflow-y: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--muted); line-height: 1.7; white-space: pre-wrap; word-break: break-word; }
+  [data-theme="light"] .extracted-text-box { background: rgba(241,245,249,0.8); }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+  @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+  .analyzing-shimmer { background: linear-gradient(90deg, transparent 0%, rgba(109,40,217,0.08) 50%, transparent 100%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
 </style>
 </head>
 <body>
 
-<header>
-  <div class="container">
-    <div class="badge">⚡ ABES Engineering College · Ghaziabad · 2025 Batch</div>
-    <h1>Placement Battle Plan</h1>
-    <p>Har ek company ka interview process, topics, aur roadmap — sab kuch ek jagah. Target: 8–10 LPA offers crack karna.</p>
+<div class="dashboard-layout">
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px;">
+        <div style="width:38px;height:38px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:1rem;box-shadow:0 4px 16px var(--accent-glow);flex-shrink:0;">⚡</div>
+        <div>
+          <div style="font-size:0.9rem;font-weight:700;letter-spacing:-0.02em;">ABES Placement</div>
+          <div style="font-size:0.68rem;color:var(--muted);">2025 Prep Portal</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="nav-links">
+      <button class="tab-btn active" onclick="showTab('dashboard')">🏠 Dashboard</button>
+      <button class="tab-btn" onclick="showTab('companies')">🏢 Companies</button>
+      <button class="tab-btn" onclick="showTab('topics')">📚 Core Topics</button>
+      <button class="tab-btn" onclick="showTab('resume')">📄 Resume Analyzer</button>
+      <button class="tab-btn" onclick="showTab('roadmap')">🗓 Roadmap</button>
+      <button class="tab-btn" onclick="showTab('checklist')">✅ Checklist</button>
+      <button class="tab-btn" onclick="showTab('resources')">🔗 Resources</button>
+      <a href="dsa-sheet.html" class="tab-btn" style="text-decoration: none; display: flex; align-items: center;">📋 DSA Sheets</a>
+      <a href="credits.html" class="tab-btn" style="text-decoration: none; display: flex; align-items: center;">✨ Credits</a>
+    </div>
 
-    <div class="stats-bar">
-      <div class="stat">
-        <span class="num">560+</span>
-        <span class="label">Companies Visit</span>
+    <div class="global-progress-box">
+      <div style="font-size: 0.72rem; color: var(--muted); margin-bottom: 6px; display: flex; justify-content: space-between; font-weight:600; text-transform:uppercase; letter-spacing:0.06em;">
+        <span>Preparation</span>
+        <span id="global-progress-text" style="color: var(--accent4);">0%</span>
       </div>
-      <div class="stat">
-        <span class="num">93%</span>
-        <span class="label">Placement Rate</span>
-      </div>
-      <div class="stat">
-        <span class="num">204</span>
-        <span class="label">7–10 LPA Offers</span>
-      </div>
-      <div class="stat">
-        <span class="num">₹59.9L</span>
-        <span class="label">Highest Package</span>
+      <div class="progress-bar" style="height: 5px;">
+        <div id="global-progress-fill" class="progress-fill" style="width: 0%; background: linear-gradient(90deg, var(--accent4), var(--accent2));"></div>
       </div>
     </div>
   </div>
-</header>
 
-<div class="container" style="padding-top: 32px; padding-bottom: 60px;">
+  <!-- MAIN WRAPPER -->
+  <div class="main-wrapper">
+    <!-- TOP HEADER -->
+    <header class="top-header">
+      <div>
+        <h1 style="font-size: 1.2rem; font-weight:800; letter-spacing:-0.03em; margin:0;" id="greetingText">Welcome, Student 👋</h1>
+        <div style="font-size: 0.75rem; color: var(--accent4); margin-top: 4px; display: flex; align-items: center; gap: 6px;">
+          <span style="width:7px;height:7px;background:var(--accent4);border-radius:50%;display:inline-block;animation:pulse 2s infinite;"></span>
+          1,204 Students Registered
+        </div>
+      </div>
+      <div style="display: flex; gap: 10px; align-items: center;">
+        <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme" title="Toggle Light/Dark Mode">
+          <svg id="theme-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+        </button>
+        <a href="admin.html" style="padding: 9px 18px; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; background: linear-gradient(135deg,var(--accent),#4c1d95); color: white; border: none; border-radius: 10px; font-size:0.82rem; font-weight:600; box-shadow:0 4px 14px var(--accent-glow); transition:all 0.2s; font-family:inherit;">Admin Portal</a>
+      </div>
+    </header>
 
-  <div class="tabs">
-    <button class="tab-btn active" onclick="showTab('companies')">🏢 Companies</button>
-    <button class="tab-btn" onclick="showTab('topics')">📚 Topics</button>
-    <button class="tab-btn" onclick="showTab('roadmap')">🗓 Roadmap</button>
-    <button class="tab-btn" onclick="showTab('checklist')">✅ Checklist</button>
-    <button class="tab-btn" onclick="showTab('resources')">🔗 Resources</button>
-  </div>
+    <div class="container" style="padding: 40px; max-width: 1200px; width: 100%;">
+      
+      <!-- DASHBOARD TAB -->
+      <div id="tab-dashboard" class="section active">
+        <div class="stats-bar" style="margin-top: 0; margin-bottom: 28px; display:grid; grid-template-columns:repeat(4,1fr); gap:12px;">
+          <div class="stat"><span class="num">560+</span><span class="label">Companies Visit</span></div>
+          <div class="stat"><span class="num">93%</span><span class="label">Placement Rate</span></div>
+          <div class="stat"><span class="num">204</span><span class="label">7–10 LPA Offers</span></div>
+          <div class="stat"><span class="num">₹59.9L</span><span class="label">Highest Package</span></div>
+        </div>
+        <div class="info-box">
+          <strong>🚀 Next Upcoming Drive:</strong> Tech Mahindra is visiting campus in early November. Secure your CS fundamentals and basic coding skills!
+        </div>
+        <div style="background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 28px; text-align: center; margin-top: 16px;">
+          <div style="font-size:2rem;margin-bottom:12px;">🎯</div>
+          <h2 style="font-size:1.2rem;font-weight:800;letter-spacing:-0.03em;margin-bottom:10px;">Your Preparation Journey</h2>
+          <p style="color: var(--muted); font-size: 0.875rem; margin-bottom: 20px; line-height:1.6;">Complete topics from Core Topics, Aptitude, and Checklist sections to increase your progress.</p>
+          <button onclick="showTab('topics')" style="padding:11px 24px;background:var(--surface);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:inherit;font-size:0.85rem;font-weight:600;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">Continue Learning →</button>
+        </div>
+      </div>
 
-  <!-- COMPANIES TAB -->
-  <div id="tab-companies" class="section active">
+      <!-- COMPANIES TAB -->
+      <div id="tab-companies" class="section">
     <div class="warning-box">
       <strong>⚠️ Eligibility Filter (Most Companies):</strong> Minimum 60% in 10th, 12th, and graduation. No active backlogs. CGPA ≥ 6.0. Agar yeh conditions meet nahi hoti, pehle yeh fix karo.
     </div>
@@ -799,6 +505,7 @@
         </div>
         <span class="company-tag">IT Giant</span>
         <span class="company-tag">Mass Recruiter</span>
+        <span class="company-tag" style="color: var(--accent2); border-color: rgba(6,182,212,0.3); background: rgba(6,182,212,0.05);">🗓 Aug–Sept</span>
         <div class="rounds-list">
           <div class="round-item"><div class="round-num">1</div><div>NQT: Quant (20Q) + Verbal (25Q) + Reasoning (20Q) + Coding (1-2 problems) — 180 min total</div></div>
           <div class="round-item"><div class="round-num">2</div><div>Tech Interview: OOPs, DBMS, OS, projects, resume</div></div>
@@ -814,6 +521,7 @@
         </div>
         <span class="company-tag">IT Giant</span>
         <span class="company-tag">HackWithInfy</span>
+        <span class="company-tag" style="color: var(--accent2); border-color: rgba(6,182,212,0.3); background: rgba(6,182,212,0.05);">🗓 Sept–Oct</span>
         <div class="rounds-list">
           <div class="round-item"><div class="round-num">1</div><div>Aptitude: 50–60 Q in 100 min — Logical, Quant, Verbal. No negative marking.</div></div>
           <div class="round-item"><div class="round-num">2</div><div>Coding Round (for SP/PP roles): DSA problems, needs optimal solutions</div></div>
@@ -829,6 +537,7 @@
         </div>
         <span class="company-tag">IT Services</span>
         <span class="company-tag">Mass Recruiter</span>
+        <span class="company-tag" style="color: var(--accent2); border-color: rgba(6,182,212,0.3); background: rgba(6,182,212,0.05);">🗓 Oct–Nov</span>
         <div class="rounds-list">
           <div class="round-item"><div class="round-num">1</div><div>Online Test: Aptitude + Logical + Verbal + Basic Coding</div></div>
           <div class="round-item"><div class="round-num">2</div><div>Tech Interview: OOPs, DSA basics, CS fundamentals</div></div>
@@ -843,9 +552,39 @@
         </div>
         <span class="company-tag">IT Services</span>
         <span class="company-tag">Mass Recruiter</span>
+        <span class="company-tag" style="color: var(--accent2); border-color: rgba(6,182,212,0.3); background: rgba(6,182,212,0.05);">🗓 Oct–Dec</span>
         <div class="rounds-list">
           <div class="round-item"><div class="round-num">1</div><div>Cognitive + Verbal + Coding Assessment</div></div>
           <div class="round-item"><div class="round-num">2</div><div>Communication Assessment</div></div>
+          <div class="round-item"><div class="round-num">3</div><div>Tech + HR Interview</div></div>
+        </div>
+      </div>
+
+      <div class="company-card mass">
+        <div class="company-header">
+          <div class="company-name">Tech Mahindra</div>
+          <span class="package-badge badge-green">4.2–5.5 LPA</span>
+        </div>
+        <span class="company-tag">IT Services</span>
+        <span class="company-tag">Mass Recruiter</span>
+        <span class="company-tag" style="color: var(--accent2); border-color: rgba(6,182,212,0.3); background: rgba(6,182,212,0.05);">🗓 Nov–Dec</span>
+        <div class="rounds-list">
+          <div class="round-item"><div class="round-num">1</div><div>Online Test: Aptitude, Logical, English + Basic Essay</div></div>
+          <div class="round-item"><div class="round-num">2</div><div>Technical Interview: Core CS basics, simple DBMS</div></div>
+          <div class="round-item"><div class="round-num">3</div><div>HR Round</div></div>
+        </div>
+      </div>
+
+      <div class="company-card mass">
+        <div class="company-header">
+          <div class="company-name">IBM</div>
+          <span class="package-badge badge-green">4.25–7 LPA</span>
+        </div>
+        <span class="company-tag">IT Consulting</span>
+        <span class="company-tag" style="color: var(--accent2); border-color: rgba(6,182,212,0.3); background: rgba(6,182,212,0.05);">🗓 Jan–Feb</span>
+        <div class="rounds-list">
+          <div class="round-item"><div class="round-num">1</div><div>Cognitive Games Assessment + English Language Test</div></div>
+          <div class="round-item"><div class="round-num">2</div><div>Coding Assessment (1-2 questions, Medium level)</div></div>
           <div class="round-item"><div class="round-num">3</div><div>Tech + HR Interview</div></div>
         </div>
       </div>
@@ -1157,6 +896,63 @@ GROUP BY dept HAVING COUNT(*) &gt; 5;
     </div>
   </div>
 
+  <!-- RESUME ANALYZER TAB -->
+  <div id="tab-resume" class="section">
+    <div class="section-title"><span class="icon">📄</span> AI Resume Analyzer</div>
+    <div class="info-box">
+      <strong>🤖 How it works:</strong> Upload your PDF resume and our analyzer will extract text using pdf.js, scan for placement-relevant skills, and match you against companies that visit ABES. Get instant feedback on your resume strength!
+    </div>
+
+    <div class="resume-upload-zone" id="resumeDropZone">
+      <span class="upload-icon">📎</span>
+      <h3>Drop your PDF resume here</h3>
+      <p>or click to browse files · PDF only · Max 10MB</p>
+      <input type="file" id="resumeFileInput" accept=".pdf" style="display:none;">
+      <div class="resume-file-name" id="resumeFileName">📄 <span></span></div>
+    </div>
+
+    <div style="text-align: center;">
+      <button class="resume-analyze-btn" id="resumeAnalyzeBtn" onclick="analyzeResume()">🔬 Analyze Resume</button>
+    </div>
+
+    <div class="resume-results" id="resumeResults">
+      <!-- Score Card -->
+      <div class="result-glass-card" style="text-align: center;">
+        <h4>🎯 Resume Score</h4>
+        <div class="resume-score-circle" id="scoreCircle">
+          <span class="score-num" id="scoreNum">0</span>
+          <span class="score-label">%</span>
+        </div>
+        <p style="color: var(--muted); font-size: 0.85rem;" id="scoreVerdict"></p>
+      </div>
+
+      <!-- Skills Found -->
+      <div class="result-glass-card">
+        <h4>🛠 Skills Detected</h4>
+        <div id="skillBarsContainer"></div>
+      </div>
+
+      <!-- Matched Companies -->
+      <div class="result-glass-card">
+        <h4>🏢 Matched Companies</h4>
+        <p style="font-size: 0.82rem; color: var(--muted); margin-bottom: 12px;">Based on your resume skills, these ABES-visiting companies match your profile:</p>
+        <div class="matched-companies-grid" id="matchedCompanies"></div>
+      </div>
+
+      <!-- Suggestions -->
+      <div class="result-glass-card">
+        <h4>💡 Improvement Suggestions</h4>
+        <ul id="resumeSuggestions" style="list-style: none; display: flex; flex-direction: column; gap: 8px;"></ul>
+      </div>
+
+      <!-- Extracted Text -->
+      <div class="result-glass-card">
+        <h4>📝 Extracted Text Preview</h4>
+        <div class="extracted-text-box" id="extractedTextBox">No text extracted yet.</div>
+      </div>
+    </div>
+  </div>
+
   <!-- ROADMAP TAB -->
   <div id="tab-roadmap" class="section">
     <div class="section-title"><span class="icon">🗓</span> 3-Month Preparation Roadmap</div>
@@ -1254,19 +1050,19 @@ GROUP BY dept HAVING COUNT(*) &gt; 5;
     <div class="section-title"><span class="icon">📅</span> Daily Schedule (3-4 Hours)</div>
     <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px;">
       <div style="background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px;">
-        <div style="font-family: 'Space Mono', monospace; font-size: 0.7rem; color: var(--accent2); margin-bottom: 8px;">MORNING (1 hr)</div>
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--accent2); margin-bottom: 8px;">MORNING (1 hr)</div>
         <div style="font-size: 0.82rem; line-height: 1.6; color: var(--muted);">1 LeetCode problem solve karo. Puri approach think karo before coding.</div>
       </div>
       <div style="background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px;">
-        <div style="font-family: 'Space Mono', monospace; font-size: 0.7rem; color: var(--accent2); margin-bottom: 8px;">AFTERNOON (1.5 hr)</div>
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--accent2); margin-bottom: 8px;">AFTERNOON (1.5 hr)</div>
         <div style="font-size: 0.82rem; line-height: 1.6; color: var(--muted);">CS Fundamentals (OS/CN/DBMS) — ek topic roz. Notes banao short form mein.</div>
       </div>
       <div style="background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px;">
-        <div style="font-family: 'Space Mono', monospace; font-size: 0.7rem; color: var(--accent2); margin-bottom: 8px;">EVENING (1 hr)</div>
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--accent2); margin-bottom: 8px;">EVENING (1 hr)</div>
         <div style="font-size: 0.82rem; line-height: 1.6; color: var(--muted);">Aptitude practice — company-specific previous papers PrepInsta se.</div>
       </div>
       <div style="background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px;">
-        <div style="font-family: 'Space Mono', monospace; font-size: 0.7rem; color: var(--accent2); margin-bottom: 8px;">NIGHT (30 min)</div>
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--accent2); margin-bottom: 8px;">NIGHT (30 min)</div>
         <div style="font-size: 0.82rem; line-height: 1.6; color: var(--muted);">HR question practice aloud. Kal ka plan set karo.</div>
       </div>
     </div>
@@ -1468,8 +1264,40 @@ GROUP BY dept HAVING COUNT(*) &gt; 5;
     Made for Aman · ABES Engineering College · Ghaziabad · Placement 2025 · <span style="color: var(--accent2);">All data sourced from NIRF, Shiksha, Collegedunia & GeeksforGeeks</span>
   </div>
 </footer>
+    </div>
+  </div>
 
 <script>
+  // Theme Toggle Logic
+  const savedTheme = localStorage.getItem('theme') || 'dark';
+  if (savedTheme === 'light') {
+    document.documentElement.setAttribute('data-theme', 'light');
+    updateThemeIcon('light');
+  }
+
+  function updateThemeIcon(theme) {
+    const icon = document.getElementById('theme-icon');
+    if (theme === 'light') {
+      icon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
+    } else {
+      icon.innerHTML = '<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>';
+    }
+  }
+
+  function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    
+    if (newTheme === 'light') {
+      document.documentElement.setAttribute('data-theme', 'light');
+    } else {
+      document.documentElement.removeAttribute('data-theme');
+    }
+    
+    localStorage.setItem('theme', newTheme);
+    updateThemeIcon(newTheme);
+  }
+
   function showTab(tab) {
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -1489,7 +1317,415 @@ GROUP BY dept HAVING COUNT(*) &gt; 5;
     const text = item.querySelector('.check-text');
     box.classList.toggle('checked');
     text.classList.toggle('done');
+    
+    // Save state stringified
+    const id = text.innerText.trim();
+    if(box.classList.contains('checked')) {
+      localStorage.setItem('chk_' + id, '1');
+    } else {
+      localStorage.removeItem('chk_' + id);
+    }
+    updateProgress();
   }
+
+  function updateProgress() {
+    const total = document.querySelectorAll('.check-item').length;
+    const checked = document.querySelectorAll('.check-box.checked').length;
+    let percent = total === 0 ? 0 : Math.round((checked / total) * 100);
+    
+    document.getElementById('global-progress-fill').style.width = percent + '%';
+    document.getElementById('global-progress-text').innerText = percent + '%';
+  }
+
+  // ==========================================
+  // RESUME ANALYZER — PDF.js Integration
+  // ==========================================
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+  let uploadedPdfFile = null;
+
+  // Drop zone events
+  const dropZone = document.getElementById('resumeDropZone');
+  const fileInput = document.getElementById('resumeFileInput');
+  const fileNameEl = document.getElementById('resumeFileName');
+  const analyzeBtn = document.getElementById('resumeAnalyzeBtn');
+
+  dropZone.addEventListener('click', () => fileInput.click());
+  dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+  dropZone.addEventListener('drop', e => {
+    e.preventDefault();
+    dropZone.classList.remove('drag-over');
+    const file = e.dataTransfer.files[0];
+    if(file && file.type === 'application/pdf') handleFileSelect(file);
+    else alert('Please upload a PDF file.');
+  });
+  fileInput.addEventListener('change', e => {
+    if(e.target.files[0]) handleFileSelect(e.target.files[0]);
+  });
+
+  function handleFileSelect(file) {
+    uploadedPdfFile = file;
+    fileNameEl.querySelector('span').textContent = file.name + ' (' + (file.size / 1024).toFixed(1) + ' KB)';
+    fileNameEl.classList.add('visible');
+    analyzeBtn.classList.add('visible');
+  }
+
+  async function analyzeResume() {
+    if(!uploadedPdfFile) return;
+    const btn = document.getElementById('resumeAnalyzeBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="analyzing-shimmer" style="display:inline-block;width:20px;height:20px;border-radius:50%;border:2px solid white;border-top-color:transparent;animation:spin 0.6s linear infinite;"></span> Analyzing...';
+
+    // Add spin keyframe dynamically
+    if(!document.getElementById('spin-style')) {
+      const s = document.createElement('style');
+      s.id = 'spin-style';
+      s.textContent = '@keyframes spin { to { transform: rotate(360deg); } }';
+      document.head.appendChild(s);
+    }
+
+    try {
+      const arrayBuffer = await uploadedPdfFile.arrayBuffer();
+      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+      let fullText = '';
+      for(let i = 1; i <= pdf.numPages; i++) {
+        const page = await pdf.getPage(i);
+        const content = await page.getTextContent();
+        fullText += content.items.map(item => item.str).join(' ') + '\n';
+      }
+
+      const textLower = fullText.toLowerCase();
+      document.getElementById('extractedTextBox').textContent = fullText.trim() || 'No text could be extracted. Try a different PDF.';
+
+      // ---- Skill detection rules ----
+      const skillCategories = {
+        'Programming Languages': { keywords: ['c++','c','java','python','javascript','typescript','go','rust','kotlin','c#','php','ruby','swift'], found: [], weight: 20 },
+        'Data Structures & Algorithms': { keywords: ['dsa','data structures','algorithms','leetcode','competitive programming','sorting','searching','trees','graphs','dynamic programming','linked list','stack','queue','binary tree','bfs','dfs','backtracking','hashing'], found: [], weight: 20 },
+        'Databases & SQL': { keywords: ['sql','mysql','postgresql','mongodb','dbms','database','nosql','firebase','redis','normalization','joins','acid','transactions'], found: [], weight: 15 },
+        'Web Development': { keywords: ['html','css','react','angular','vue','node','express','django','flask','rest api','graphql','next.js','tailwind','bootstrap','frontend','backend','full stack','fullstack','web development'], found: [], weight: 10 },
+        'CS Fundamentals': { keywords: ['operating system','os','computer network','networking','tcp','http','osi','oops','object oriented','encapsulation','polymorphism','inheritance','abstraction'], found: [], weight: 15 },
+        'Tools & DevOps': { keywords: ['git','github','docker','kubernetes','aws','azure','gcp','linux','ci/cd','jenkins','terraform','cloud'], found: [], weight: 5 },
+        'Projects': { keywords: ['project','developed','built','created','implemented','designed','deployed','portfolio','github.com','live demo'], found: [], weight: 10 },
+        'Soft Skills & Extras': { keywords: ['leadership','team','collaboration','communication','volunteer','hackathon','certification','certified','workshop','internship','intern','training'], found: [], weight: 5 }
+      };
+
+      let totalScore = 0;
+      let maxScore = 0;
+
+      Object.keys(skillCategories).forEach(cat => {
+        const c = skillCategories[cat];
+        c.keywords.forEach(kw => {
+          if(textLower.includes(kw) && !c.found.includes(kw)) c.found.push(kw);
+        });
+        const catScore = Math.min(c.found.length / Math.max(3, c.keywords.length * 0.3), 1) * c.weight;
+        totalScore += catScore;
+        maxScore += c.weight;
+      });
+
+      const score = Math.min(Math.round((totalScore / maxScore) * 100), 100);
+
+      // ---- Render Score ----
+      const scoreCircle = document.getElementById('scoreCircle');
+      const scoreColor = score >= 75 ? 'var(--accent4)' : score >= 50 ? 'var(--accent3)' : 'var(--danger)';
+      scoreCircle.style.background = `conic-gradient(${scoreColor} ${score * 3.6}deg, var(--border) 0deg)`;
+      scoreCircle.querySelector('.score-num').textContent = score;
+      scoreCircle.querySelector('.score-num').style.color = scoreColor;
+
+      const verdicts = [
+        [90, '🏆 Outstanding! Your resume is placement-ready!'],
+        [75, '🌟 Great resume! Minor tweaks needed.'],
+        [60, '👍 Good foundation. Add more projects & skills.'],
+        [40, '⚠️ Needs work. Focus on adding DSA, projects, and CS fundamentals.'],
+        [0,  '🔴 Significant gaps. Start with core skills and projects.']
+      ];
+      document.getElementById('scoreVerdict').textContent = verdicts.find(v => score >= v[0])[1];
+
+      // ---- Render Skill Bars ----
+      const barsContainer = document.getElementById('skillBarsContainer');
+      barsContainer.innerHTML = '';
+      Object.keys(skillCategories).forEach(cat => {
+        const c = skillCategories[cat];
+        const pct = Math.round(Math.min(c.found.length / Math.max(3, c.keywords.length * 0.3), 1) * 100);
+        const barColor = pct >= 70 ? 'linear-gradient(90deg, #10b981, #06b6d4)' : pct >= 40 ? 'linear-gradient(90deg, #f59e0b, #ef4444)' : 'linear-gradient(90deg, #ef4444, #dc2626)';
+        barsContainer.innerHTML += `
+          <div class="skill-bar-container">
+            <div class="skill-bar-label">
+              <span class="skill-name">${cat}</span>
+              <span>${c.found.length > 0 ? c.found.slice(0,4).join(', ') + (c.found.length > 4 ? '...' : '') : 'None found'}</span>
+            </div>
+            <div class="skill-bar"><div class="skill-bar-fill" style="width: 0%; background: ${barColor};" data-target="${pct}"></div></div>
+          </div>`;
+      });
+      // Animate bars
+      setTimeout(() => {
+        document.querySelectorAll('.skill-bar-fill').forEach(bar => {
+          bar.style.width = bar.dataset.target + '%';
+        });
+      }, 100);
+
+      // ---- Match Companies ----
+      const companyRules = [
+        { name: 'Amazon', tier: 'super', needs: ['dsa','algorithms','data structures','system design'] },
+        { name: 'Atlassian', tier: 'super', needs: ['dsa','algorithms','system design','code review'] },
+        { name: 'Cisco', tier: 'dream', needs: ['networking','c++','c','dsa','tcp','computer network'] },
+        { name: 'Synopsys', tier: 'dream', needs: ['c++','c','oops','digital','dsa'] },
+        { name: 'Goldman Sachs', tier: 'dream', needs: ['dsa','sql','algorithms','probability'] },
+        { name: 'GroundTruth', tier: 'dream', needs: ['dsa','oops','project'] },
+        { name: 'Capgemini Exceller', tier: 'dream', needs: ['c++','java','python','pseudocode'] },
+        { name: 'HSBC / NTT Data', tier: 'dream', needs: ['sql','dbms','os'] },
+        { name: 'TCS (NQT)', tier: 'mass', needs: ['aptitude','c++','java','python','sql'] },
+        { name: 'Infosys', tier: 'mass', needs: ['aptitude','java','python','sql'] },
+        { name: 'Wipro / Cognizant', tier: 'mass', needs: ['aptitude','oops','dsa'] },
+        { name: 'Accenture / HCL', tier: 'mass', needs: ['communication','aptitude','coding'] },
+        { name: 'Tech Mahindra', tier: 'mass', needs: ['aptitude','dbms','sql'] },
+        { name: 'IBM', tier: 'mass', needs: ['coding','english','python','java'] }
+      ];
+
+      const allFoundSkills = Object.values(skillCategories).flatMap(c => c.found);
+      const matchedEl = document.getElementById('matchedCompanies');
+      matchedEl.innerHTML = '';
+      let matchCount = 0;
+      companyRules.forEach(company => {
+        const matchedKeywords = company.needs.filter(kw => allFoundSkills.some(s => s.includes(kw) || kw.includes(s)));
+        const matchPct = matchedKeywords.length / company.needs.length;
+        if(matchPct >= 0.3) {
+          matchCount++;
+          const chipClass = 'chip-' + company.tier;
+          matchedEl.innerHTML += `<div class="matched-company-chip ${chipClass}">
+            <span>${company.tier === 'super' ? '🚀' : company.tier === 'dream' ? '🏆' : '🌊'}</span>
+            ${company.name}
+            <span style="font-size:0.7rem;opacity:0.7;">${Math.round(matchPct*100)}%</span>
+          </div>`;
+        }
+      });
+      if(matchCount === 0) matchedEl.innerHTML = '<p style="color:var(--muted);font-size:0.85rem;">No strong matches found. Add more relevant skills to your resume.</p>';
+
+      // ---- Suggestions ----
+      const suggestionsEl = document.getElementById('resumeSuggestions');
+      suggestionsEl.innerHTML = '';
+      const suggestions = [];
+      if(skillCategories['Programming Languages'].found.length === 0) suggestions.push({ icon: '🔴', text: 'Add programming languages (C++, Java, Python) prominently to your resume.' });
+      if(skillCategories['Data Structures & Algorithms'].found.length < 2) suggestions.push({ icon: '🔴', text: 'Mention DSA skills explicitly — "Data Structures", "Algorithms", "LeetCode" keywords help.' });
+      if(skillCategories['Databases & SQL'].found.length === 0) suggestions.push({ icon: '🟡', text: 'Add SQL/DBMS skills — most companies ask SQL queries in interviews.' });
+      if(skillCategories['Projects'].found.length < 2) suggestions.push({ icon: '🟡', text: 'Add 2-3 projects with action verbs: "developed", "built", "implemented", "deployed".' });
+      if(skillCategories['CS Fundamentals'].found.length === 0) suggestions.push({ icon: '🟡', text: 'Mention OS, Computer Networks, OOPs concepts in your skills section.' });
+      if(skillCategories['Tools & DevOps'].found.length === 0) suggestions.push({ icon: '🟢', text: 'Add tools: Git, GitHub, Docker, Linux — they make your profile stand out.' });
+      if(skillCategories['Soft Skills & Extras'].found.length === 0) suggestions.push({ icon: '🟢', text: 'Include hackathons, certifications, internships, and leadership activities.' });
+      if(!textLower.includes('github.com')) suggestions.push({ icon: '💡', text: 'Add your GitHub profile link — recruiters check it.' });
+      if(!textLower.includes('linkedin')) suggestions.push({ icon: '💡', text: 'Add your LinkedIn profile URL to your resume header.' });
+      if(fullText.length > 3000) suggestions.push({ icon: '📏', text: 'Your resume seems long. Keep it to 1 page for freshers.' });
+      if(suggestions.length === 0) suggestions.push({ icon: '✅', text: 'Your resume looks comprehensive! Keep refining project descriptions.' });
+
+      suggestions.forEach(s => {
+        suggestionsEl.innerHTML += `<li style="background: var(--surface); border: 1px solid var(--border); padding: 10px 14px; border-radius: 10px; font-size: 0.83rem; display: flex; align-items: flex-start; gap: 8px;"><span style="flex-shrink:0;">${s.icon}</span> ${s.text}</li>`;
+      });
+
+      // Show results
+      document.getElementById('resumeResults').classList.add('visible');
+      document.getElementById('resumeResults').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      // ---- Save to localStorage for Admin Dashboard ----
+      saveStudentResumeData(score, skillCategories, matchCount);
+
+    } catch(err) {
+      alert('Error reading PDF: ' + err.message);
+      console.error(err);
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '🔬 Analyze Resume';
+    }
+  }
+
+  // ==========================================
+  // STUDENT DATA SYNC (localStorage)
+  // ==========================================
+  function getStudentId() {
+    let sid = localStorage.getItem('student_id');
+    if(!sid) {
+      sid = 'STU-' + Date.now().toString(36).toUpperCase();
+      localStorage.setItem('student_id', sid);
+    }
+    return sid;
+  }
+
+  function getStudentProfile() {
+    const id = getStudentId();
+    const raw = localStorage.getItem('student_profile_' + id);
+    if(raw) return JSON.parse(raw);
+    // Create default profile
+    const profile = {
+      id: id,
+      name: 'Student ' + id.slice(-4),
+      email: id.toLowerCase() + '@abes.ac.in',
+      branch: 'CSE',
+      cgpa: (6 + Math.random() * 3).toFixed(2),
+      registeredAt: new Date().toISOString(),
+      lastActive: new Date().toISOString(),
+      resumeScore: null,
+      resumeAnalyzedAt: null,
+      skillsFound: {},
+      matchedCompanies: 0,
+      checklistProgress: 0,
+      checklistDetails: {},
+      weakAreas: [],
+      strongAreas: []
+    };
+    localStorage.setItem('student_profile_' + id, JSON.stringify(profile));
+    updateStudentRegistry(id);
+    return profile;
+  }
+
+  function saveStudentProfile(profile) {
+    profile.lastActive = new Date().toISOString();
+    localStorage.setItem('student_profile_' + profile.id, JSON.stringify(profile));
+    updateStudentRegistry(profile.id);
+  }
+
+  function updateStudentRegistry(id) {
+    let registry = JSON.parse(localStorage.getItem('student_registry') || '[]');
+    if(!registry.includes(id)) {
+      registry.push(id);
+      localStorage.setItem('student_registry', JSON.stringify(registry));
+    }
+  }
+
+  function saveStudentResumeData(score, skillCategories, matchCount) {
+    const profile = getStudentProfile();
+    profile.resumeScore = score;
+    profile.resumeAnalyzedAt = new Date().toISOString();
+    profile.matchedCompanies = matchCount;
+    
+    const skillsFound = {};
+    const weakAreas = [];
+    const strongAreas = [];
+    Object.keys(skillCategories).forEach(cat => {
+      const c = skillCategories[cat];
+      const pct = Math.round(Math.min(c.found.length / Math.max(3, c.keywords.length * 0.3), 1) * 100);
+      skillsFound[cat] = { found: c.found, percentage: pct };
+      if(pct >= 60) strongAreas.push(cat);
+      else weakAreas.push(cat);
+    });
+    profile.skillsFound = skillsFound;
+    profile.weakAreas = weakAreas;
+    profile.strongAreas = strongAreas;
+    saveStudentProfile(profile);
+  }
+
+  function saveChecklistProgress() {
+    const profile = getStudentProfile();
+    const total = document.querySelectorAll('.check-item').length;
+    const checked = document.querySelectorAll('.check-box.checked').length;
+    profile.checklistProgress = total === 0 ? 0 : Math.round((checked / total) * 100);
+
+    // Save per-section details
+    const sections = {};
+    document.querySelectorAll('.checklist').forEach(cl => {
+      const title = cl.querySelector('h3')?.innerText || 'Unknown';
+      const items = cl.querySelectorAll('.check-item').length;
+      const done = cl.querySelectorAll('.check-box.checked').length;
+      sections[title] = { total: items, done: done, pct: items === 0 ? 0 : Math.round((done/items)*100) };
+    });
+    profile.checklistDetails = sections;
+    saveStudentProfile(profile);
+  }
+
+  // Init features
+  setTimeout(() => {
+    // 0. Ensure student profile exists
+    getStudentProfile();
+
+    // 1. Load saved checks
+    document.querySelectorAll('.check-item').forEach(item => {
+      const text = item.querySelector('.check-text').innerText.trim();
+      if(localStorage.getItem('chk_' + text) === '1') {
+        item.querySelector('.check-box').classList.add('checked');
+        item.querySelector('.check-text').classList.add('done');
+      }
+    });
+    updateProgress();
+    saveChecklistProgress();
+
+    // 2. Add Practice links to all Core Topics
+    document.querySelectorAll('#tab-topics .subtopic-list li').forEach(li => {
+        if(!li.querySelector('a')) {
+            let practiceUrl = "https://leetcode.com/problemset/all/";
+            const topicCard = li.closest('.topic-card');
+            if (topicCard) {
+              const topicName = topicCard.querySelector('.topic-name').innerText || "";
+              if (topicName.includes("Aptitude")) practiceUrl = "https://www.indiabix.com/";
+              else if (topicName.includes("DBMS & SQL")) practiceUrl = "https://www.hackerrank.com/domains/sql";
+              else if (topicName.includes("Puzzles")) practiceUrl = "https://brainstellar.com/";
+              else if (topicName.match(/(OOPs|Operating Systems|Computer Networks)/)) practiceUrl = "https://www.geeksforgeeks.org/";
+              else if (topicName.includes("HR")) practiceUrl = "https://www.ambitionbox.com/interviews";
+            }
+            li.innerHTML += ` <a href="${practiceUrl}" target="_blank" style="float:right; font-size: 0.65rem; color: var(--accent2); text-decoration: none;">Practice ↗</a>`;
+        }
+    });
+
+    // 3. Seed demo students if none exist (for admin dashboard demo)
+    seedDemoStudents();
+  }, 100);
+
+  // Override toggleCheck to also save progress
+  const originalToggleCheck = toggleCheck;
+  window.toggleCheck = function(item) {
+    originalToggleCheck(item);
+    saveChecklistProgress();
+  };
+
+  // Seed demo student data for admin dashboard
+  function seedDemoStudents() {
+    let registry = JSON.parse(localStorage.getItem('student_registry') || '[]');
+    if(registry.length >= 5) return; // Already seeded
+
+    const demoStudents = [
+      { name: 'Aman Sharma', branch: 'CSE', cgpa: '8.2', resumeScore: 78, checklistProgress: 65, matchedCompanies: 8, weakAreas: ['Tools & DevOps','Soft Skills & Extras'], strongAreas: ['Programming Languages','Data Structures & Algorithms','Web Development'] },
+      { name: 'Priya Singh', branch: 'CSE', cgpa: '8.7', resumeScore: 85, checklistProgress: 80, matchedCompanies: 11, weakAreas: ['Tools & DevOps'], strongAreas: ['Programming Languages','Data Structures & Algorithms','CS Fundamentals','Databases & SQL'] },
+      { name: 'Rahul Verma', branch: 'IT', cgpa: '7.1', resumeScore: 52, checklistProgress: 35, matchedCompanies: 5, weakAreas: ['Data Structures & Algorithms','CS Fundamentals','Tools & DevOps','Soft Skills & Extras'], strongAreas: ['Programming Languages','Web Development'] },
+      { name: 'Sneha Gupta', branch: 'CSE', cgpa: '9.0', resumeScore: 92, checklistProgress: 90, matchedCompanies: 13, weakAreas: [], strongAreas: ['Programming Languages','Data Structures & Algorithms','CS Fundamentals','Databases & SQL','Web Development','Projects'] },
+      { name: 'Vikash Kumar', branch: 'ECE', cgpa: '6.5', resumeScore: 38, checklistProgress: 20, matchedCompanies: 3, weakAreas: ['Data Structures & Algorithms','CS Fundamentals','Databases & SQL','Tools & DevOps','Projects','Soft Skills & Extras'], strongAreas: ['Programming Languages'] },
+      { name: 'Ananya Joshi', branch: 'CSE', cgpa: '7.8', resumeScore: 68, checklistProgress: 55, matchedCompanies: 7, weakAreas: ['CS Fundamentals','Tools & DevOps'], strongAreas: ['Programming Languages','Web Development','Projects'] },
+      { name: 'Rohit Patel', branch: 'IT', cgpa: '7.4', resumeScore: 61, checklistProgress: 45, matchedCompanies: 6, weakAreas: ['CS Fundamentals','Soft Skills & Extras'], strongAreas: ['Programming Languages','Databases & SQL','Web Development'] },
+      { name: 'Kavya Mishra', branch: 'CSE', cgpa: '8.5', resumeScore: 74, checklistProgress: 70, matchedCompanies: 9, weakAreas: ['Tools & DevOps'], strongAreas: ['Programming Languages','Data Structures & Algorithms','CS Fundamentals','Projects'] }
+    ];
+
+    demoStudents.forEach((d, i) => {
+      const id = 'STU-DEMO' + (i+1);
+      if(registry.includes(id)) return;
+      const profile = {
+        id: id,
+        name: d.name,
+        email: d.name.split(' ')[0].toLowerCase() + '@abes.ac.in',
+        branch: d.branch,
+        cgpa: d.cgpa,
+        registeredAt: new Date(Date.now() - Math.random() * 30 * 86400000).toISOString(),
+        lastActive: new Date(Date.now() - Math.random() * 3 * 86400000).toISOString(),
+        resumeScore: d.resumeScore,
+        resumeAnalyzedAt: d.resumeScore ? new Date(Date.now() - Math.random() * 5 * 86400000).toISOString() : null,
+        skillsFound: {},
+        matchedCompanies: d.matchedCompanies,
+        checklistProgress: d.checklistProgress,
+        checklistDetails: {
+          '📄 Resume & Profile': { total: 6, done: Math.floor(6 * d.checklistProgress/100), pct: d.checklistProgress },
+          '💻 DSA Milestones': { total: 6, done: Math.floor(6 * d.checklistProgress/100), pct: d.checklistProgress },
+          '📚 CS Fundamentals': { total: 5, done: Math.floor(5 * d.checklistProgress/100), pct: d.checklistProgress },
+          '🧠 Aptitude & Mock Tests': { total: 4, done: Math.floor(4 * d.checklistProgress/100), pct: d.checklistProgress },
+          '💬 Interview Readiness': { total: 4, done: Math.floor(4 * d.checklistProgress/100), pct: d.checklistProgress }
+        },
+        weakAreas: d.weakAreas,
+        strongAreas: d.strongAreas
+      };
+      localStorage.setItem('student_profile_' + id, JSON.stringify(profile));
+      registry.push(id);
+    });
+    localStorage.setItem('student_registry', JSON.stringify(registry));
+  }
+
+  document.addEventListener("mousemove", (e) => {
+  document.body.style.setProperty('--mouse-x', e.clientX + 'px');
+  document.body.style.setProperty('--mouse-y', e.clientY + 'px');
+});
 </script>
 </body>
 </html>

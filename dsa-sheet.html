@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DSA Sheets — ABES Placement Prep</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================
+   DESIGN TOKENS
+============================================ */
+:root {
+  --bg: #000000;
+  --bg2: #050505;
+  --surface: #0a0a0a;
+  --card: #111111;
+  --card2: #151515;
+  --border: #1a1a1a;
+  --border2: #222222;
+  --accent: #6d28d9;
+  --accent-light: #7c3aed;
+  --accent-glow: rgba(109,40,217,0.3);
+  --cyan: #06b6d4;
+  --cyan-glow: rgba(6,182,212,0.25);
+  --amber: #f59e0b;
+  --amber-glow: rgba(245,158,11,0.25);
+  --green: #10b981;
+  --green-glow: rgba(16,185,129,0.25);
+  --red: #ef4444;
+  --text: #ffffff;
+  --text2: #e5e5e5;
+  --muted: #888888;
+  --muted2: #666666;
+  --purple-soft: #c4b5fd;
+  --radius: 16px;
+  --radius-sm: 10px;
+  --radius-xs: 6px;
+  --shadow: 0 4px 24px rgba(0,0,0,0.6);
+  --shadow-lg: 0 12px 48px rgba(0,0,0,0.7);
+  --transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
+}
+
+[data-theme="light"] {
+  --bg: #f8f9ff;
+  --bg2: #f0f2ff;
+  --surface: #ffffff;
+  --card: #ffffff;
+  --card2: #f8f9ff;
+  --border: #e2e8f0;
+  --border2: #cbd5e1;
+  --accent: #6d28d9;
+  --accent-light: #7c3aed;
+  --accent-glow: rgba(109,40,217,0.12);
+  --cyan: #0891b2;
+  --cyan-glow: rgba(8,145,178,0.12);
+  --amber: #d97706;
+  --amber-glow: rgba(217,119,6,0.12);
+  --green: #059669;
+  --green-glow: rgba(5,150,105,0.12);
+  --text: #0f172a;
+  --text2: #1e293b;
+  --muted: #64748b;
+  --muted2: #94a3b8;
+  --purple-soft: #6d28d9;
+  --shadow: 0 4px 24px rgba(0,0,0,0.08);
+  --shadow-lg: 0 12px 48px rgba(0,0,0,0.12);
+}
+
+/* ============================================
+   RESET & BASE
+============================================ */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', system-ui, sans-serif;
+  min-height: 100vh;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* Animated mesh background */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 50% at 20% -10%, rgba(109,40,217,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 110%, rgba(6,182,212,0.06) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(109,40,217,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(109,40,217,0.025) 1px, transparent 1px);
+  background-size: 48px 48px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ============================================
+   NAVBAR
+============================================ */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  padding: 0 40px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(6,6,8,0.75);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border-bottom: 1px solid var(--border);
+}
+
+[data-theme="light"] .navbar {
+  background: rgba(248,249,255,0.8);
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+}
+
+.brand-logo {
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, var(--accent), var(--cyan));
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  box-shadow: 0 0 20px var(--accent-glow);
+}
+
+.brand-text {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+
+.brand-sub {
+  font-size: 0.7rem;
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: transparent;
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-sm);
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  text-decoration: none;
+  transition: var(--transition);
+}
+
+.btn-ghost:hover {
+  border-color: var(--accent-light);
+  color: var(--text);
+  background: var(--accent-glow);
+}
+
+.btn-icon {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  color: var(--muted);
+  transition: var(--transition);
+}
+
+.btn-icon:hover {
+  border-color: var(--accent-light);
+  color: var(--text);
+}
+
+/* ============================================
+   HERO SECTION
+============================================ */
+.hero {
+  position: relative;
+  z-index: 1;
+  padding: 72px 40px 48px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 14px;
+  background: var(--accent-glow);
+  border: 1px solid rgba(109,40,217,0.3);
+  border-radius: 100px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--purple-soft);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+
+.hero-eyebrow .dot {
+  width: 6px;
+  height: 6px;
+  background: var(--accent-light);
+  border-radius: 50%;
+  animation: pulse-dot 2s infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.8); }
+}
+
+.hero h1 {
+  font-size: clamp(2rem, 4.5vw, 3.2rem);
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  line-height: 1.1;
+  margin-bottom: 16px;
+  background: linear-gradient(135deg, var(--text) 0%, var(--purple-soft) 50%, var(--cyan) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero p {
+  font-size: 1rem;
+  color: var(--muted);
+  max-width: 560px;
+  line-height: 1.7;
+}
+
+/* ============================================
+   PACKAGE SELECTOR
+============================================ */
+.pkg-section {
+  position: relative;
+  z-index: 1;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 40px 40px;
+}
+
+.pkg-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 14px;
+}
+
+.pkg-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.pkg-card {
+  position: relative;
+  padding: 24px;
+  background: var(--card);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: var(--transition);
+  overflow: hidden;
+}
+
+.pkg-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.3s;
+  border-radius: var(--radius);
+}
+
+.pkg-card.pkg-green::before { background: radial-gradient(ellipse at top left, var(--green-glow), transparent 70%); }
+.pkg-card.pkg-amber::before { background: radial-gradient(ellipse at top left, var(--amber-glow), transparent 70%); }
+
+.pkg-card:hover, .pkg-card.active {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+}
+
+.pkg-card:hover::before, .pkg-card.active::before { opacity: 1; }
+
+.pkg-card.pkg-green:hover, .pkg-card.pkg-green.active {
+  border-color: var(--green);
+  box-shadow: 0 12px 40px var(--green-glow);
+}
+
+.pkg-card.pkg-amber:hover, .pkg-card.pkg-amber.active {
+  border-color: var(--amber);
+  box-shadow: 0 12px 40px var(--amber-glow);
+}
+
+.pkg-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.pkg-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+}
+
+.pkg-icon-green { background: var(--green-glow); }
+.pkg-icon-amber { background: var(--amber-glow); }
+
+.pkg-check {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid var(--border2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+  flex-shrink: 0;
+}
+
+.pkg-card.pkg-green.active .pkg-check { background: var(--green); border-color: var(--green); }
+.pkg-card.pkg-amber.active .pkg-check { background: var(--amber); border-color: var(--amber); }
+.pkg-card.active .pkg-check::after { content: '✓'; color: white; font-size: 11px; font-weight: 700; }
+
+.pkg-range {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.pkg-range-green { color: var(--green); }
+.pkg-range-amber { color: var(--amber); }
+
+.pkg-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+
+.pkg-desc {
+  font-size: 0.8rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.pkg-tag {
+  display: inline-block;
+  margin-top: 12px;
+  padding: 3px 10px;
+  border-radius: 100px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.pkg-tag-green { background: var(--green-glow); color: var(--green); border: 1px solid rgba(16,185,129,0.3); }
+.pkg-tag-amber { background: var(--amber-glow); color: var(--amber); border: 1px solid rgba(245,158,11,0.3); }
+
+/* ============================================
+   CONTENT PANELS
+============================================ */
+.content {
+  position: relative;
+  z-index: 1;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 40px 100px;
+}
+
+.panel { display: none; }
+.panel.active { display: block; animation: slideUp 0.35s cubic-bezier(0.4,0,0.2,1); }
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================
+   ALERT BOXES
+============================================ */
+.alert {
+  display: flex;
+  gap: 14px;
+  padding: 16px 20px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 20px;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  border: 1px solid;
+}
+
+.alert-icon {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.alert-cyan {
+  background: var(--cyan-glow);
+  border-color: rgba(6,182,212,0.25);
+  color: var(--text2);
+}
+
+.alert-cyan strong { color: var(--cyan); }
+
+.alert-amber {
+  background: var(--amber-glow);
+  border-color: rgba(245,158,11,0.25);
+  color: var(--text2);
+}
+
+.alert-amber strong { color: var(--amber); }
+
+/* ============================================
+   SHEET CARDS
+============================================ */
+.sheet-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 16px;
+  transition: var(--transition);
+  box-shadow: var(--shadow);
+}
+
+.sheet-card:hover {
+  border-color: var(--border2);
+  box-shadow: var(--shadow-lg);
+}
+
+.sheet-header {
+  padding: 22px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.sheet-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 1;
+  min-width: 0;
+}
+
+.sheet-icon-wrap {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  flex-shrink: 0;
+}
+
+.sheet-icon-green { background: var(--green-glow); border: 1px solid rgba(16,185,129,0.2); }
+.sheet-icon-cyan { background: var(--cyan-glow); border: 1px solid rgba(6,182,212,0.2); }
+.sheet-icon-amber { background: var(--amber-glow); border: 1px solid rgba(245,158,11,0.2); }
+
+.sheet-meta { min-width: 0; }
+
+.sheet-title {
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  margin-bottom: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sheet-sub {
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.sheet-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.btn-outline {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 16px;
+  background: transparent;
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-sm);
+  color: var(--text2);
+  font-size: 0.8rem;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  text-decoration: none;
+  transition: var(--transition);
+  white-space: nowrap;
+}
+
+.btn-outline:hover {
+  border-color: var(--cyan);
+  color: var(--cyan);
+  background: var(--cyan-glow);
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 18px;
+  background: linear-gradient(135deg, var(--accent), #4c1d95);
+  border: none;
+  border-radius: var(--radius-sm);
+  color: white;
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  text-decoration: none;
+  transition: var(--transition);
+  white-space: nowrap;
+  box-shadow: 0 4px 16px var(--accent-glow);
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px var(--accent-glow);
+  filter: brightness(1.1);
+}
+
+.btn-ext {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 18px;
+  background: linear-gradient(135deg, #0891b2, #0e7490);
+  border: none;
+  border-radius: var(--radius-sm);
+  color: white;
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  text-decoration: none;
+  transition: var(--transition);
+  white-space: nowrap;
+  box-shadow: 0 4px 16px var(--cyan-glow);
+}
+
+.btn-ext:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px var(--cyan-glow);
+  filter: brightness(1.1);
+}
+
+/* PDF Viewer */
+.pdf-viewer { display: none; border-top: 1px solid var(--border); }
+.pdf-viewer.open { display: block; }
+.pdf-frame { width: 100%; height: 720px; border: none; display: block; }
+
+.pdf-placeholder {
+  padding: 56px 32px;
+  text-align: center;
+}
+
+.placeholder-icon-wrap {
+  width: 72px;
+  height: 72px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  margin: 0 auto 20px;
+}
+
+.pdf-placeholder h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: var(--text);
+}
+
+.pdf-placeholder p {
+  font-size: 0.82rem;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.pdf-placeholder code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 2px 8px;
+  border-radius: 4px;
+  color: var(--cyan);
+}
+
+/* OR Divider */
+.or-divider {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 24px 0;
+}
+
+.or-divider::before, .or-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.or-divider span {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--muted);
+  padding: 5px 14px;
+  background: var(--card2);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  letter-spacing: 0.1em;
+}
+
+/* ============================================
+   TOPIC CHIPS
+============================================ */
+.topics-section {
+  margin-top: 24px;
+  padding: 20px 24px;
+  background: var(--card2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.topics-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 12px;
+}
+
+.chips-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  padding: 5px 12px;
+  border-radius: var(--radius-xs);
+  font-size: 0.75rem;
+  font-weight: 500;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  transition: var(--transition);
+}
+
+.chip:hover {
+  border-color: var(--accent-light);
+  color: var(--purple-soft);
+  background: var(--accent-glow);
+}
+
+/* ============================================
+   RESPONSIVE
+============================================ */
+@media (max-width: 700px) {
+  .navbar { padding: 0 20px; }
+  .hero { padding: 48px 20px 32px; }
+  .pkg-section { padding: 0 20px 32px; }
+  .content { padding: 0 20px 80px; }
+  .pkg-grid { grid-template-columns: 1fr; }
+  .sheet-header { flex-direction: column; align-items: flex-start; }
+  .sheet-actions { width: 100%; }
+  .btn-outline, .btn-primary, .btn-ext { flex: 1; justify-content: center; }
+  .pdf-frame { height: 480px; }
+  .hero h1 { font-size: 1.8rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <a href="index.html" class="navbar-brand">
+    <div class="brand-logo">⚡</div>
+    <div>
+      <div class="brand-text">ABES Placement</div>
+      <div class="brand-sub">2025 Prep Portal</div>
+    </div>
+  </a>
+  <div class="navbar-right">
+    <button class="btn-icon" onclick="toggleTheme()" aria-label="Toggle theme" title="Toggle theme">
+      <svg id="theme-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+      </svg>
+    </button>
+    <a href="index.html" class="btn-ghost">← Dashboard</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-eyebrow">
+    <span class="dot"></span>
+    DSA Practice Sheets
+  </div>
+  <h1>Pick Your Target.<br>Crack the Interview.</h1>
+  <p>Two curated DSA sheets based on your salary target. No fluff — just the right problems for the right companies.</p>
+</section>
+
+<!-- PACKAGE SELECTOR -->
+<section class="pkg-section">
+  <div class="pkg-label">Select your target package</div>
+  <div class="pkg-grid">
+    <div class="pkg-card pkg-green active" onclick="switchPkg('pkg1', this)">
+      <div class="pkg-card-top">
+        <div class="pkg-icon pkg-icon-green">🎯</div>
+        <div class="pkg-check"></div>
+      </div>
+      <div class="pkg-range pkg-range-green">Target Package</div>
+      <div class="pkg-title">5 – 8 LPA</div>
+      <div class="pkg-desc">TCS, Infosys, Wipro, Cognizant, HCL. Basics + moderate DSA. Custom curated sheet.</div>
+      <span class="pkg-tag pkg-tag-green">60 Questions · Custom Sheet</span>
+    </div>
+
+    <div class="pkg-card pkg-amber" onclick="switchPkg('pkg2', this)">
+      <div class="pkg-card-top">
+        <div class="pkg-icon pkg-icon-amber">🚀</div>
+        <div class="pkg-check"></div>
+      </div>
+      <div class="pkg-range pkg-range-amber">Target Package</div>
+      <div class="pkg-title">7 – 12 LPA</div>
+      <div class="pkg-desc">Cisco, HSBC, NTT Data, Capgemini Exceller. Stronger DSA. Two sheet options.</div>
+      <span class="pkg-tag pkg-tag-amber">Infosys Plan · Striver A2Z</span>
+    </div>
+  </div>
+</section>
+
+<!-- CONTENT -->
+<div class="content">
+
+  <!-- PANEL 1: 5-8 LPA -->
+  <div id="panel-pkg1" class="panel active">
+    <div class="alert alert-cyan">
+      <span class="alert-icon">📌</span>
+      <div><strong>For 5–8 LPA roles:</strong> Mass recruiters focus on basic DSA — arrays, strings, sorting, searching, basic DP. This 60-question custom sheet covers exactly what they ask in Round 1 coding tests.</div>
+    </div>
+
+    <div class="sheet-card">
+      <div class="sheet-header">
+        <div class="sheet-left">
+          <div class="sheet-icon-wrap sheet-icon-green">📄</div>
+          <div class="sheet-meta">
+            <div class="sheet-title">Custom DSA Sheet — 5 to 8 LPA</div>
+            <div class="sheet-sub">60 Questions · Curated by ABES Placement Team · Mass recruiter patterns</div>
+          </div>
+        </div>
+        <div class="sheet-actions">
+          <a href="sheets/60_DSA_Questions_Sheet_Shivansh_vasu.pdf" download class="btn-outline">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download
+          </a>
+          <button class="btn-primary" onclick="toggleViewer('viewer-custom', this)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            View Sheet
+          </button>
+        </div>
+      </div>
+      <div id="viewer-custom" class="pdf-viewer">
+        <div id="viewer-custom-content"></div>
+      </div>
+    </div>
+
+    <div class="alert alert-amber" style="margin-top: 8px;">
+      <span class="alert-icon">⚡</span>
+      <div><strong>Focus topics:</strong> Arrays, Strings, Linked Lists, Stacks & Queues, Binary Search, Sorting, Basic Recursion, Basic DP (Fibonacci, Knapsack), Hashing.</div>
+    </div>
+
+    <div class="topics-section">
+      <div class="topics-label">Topics covered in this sheet</div>
+      <div class="chips-wrap">
+        <span class="chip">Arrays</span>
+        <span class="chip">Strings</span>
+        <span class="chip">Linked List</span>
+        <span class="chip">Stack & Queue</span>
+        <span class="chip">Binary Search</span>
+        <span class="chip">Sorting Algorithms</span>
+        <span class="chip">Recursion</span>
+        <span class="chip">Basic DP</span>
+        <span class="chip">Hashing</span>
+        <span class="chip">Trees (Basic)</span>
+        <span class="chip">Two Pointers</span>
+        <span class="chip">Sliding Window</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANEL 2: 7-12 LPA -->
+  <div id="panel-pkg2" class="panel">
+    <div class="alert alert-cyan">
+      <span class="alert-icon">📌</span>
+      <div><strong>For 7–12 LPA roles:</strong> Dream companies expect stronger DSA. Solve either the Hack with Infosys 25-day plan (if targeting Infosys SP/DSE) OR Striver's A2Z DSA Sheet for complete preparation.</div>
+    </div>
+
+    <!-- Hack with Infosys -->
+    <div class="sheet-card">
+      <div class="sheet-header">
+        <div class="sheet-left">
+          <div class="sheet-icon-wrap sheet-icon-cyan">🔷</div>
+          <div class="sheet-meta">
+            <div class="sheet-title">Hack with Infosys — 25 Day DSA Plan</div>
+            <div class="sheet-sub">Targeted for Infosys SP / DSE roles · 7–9 LPA · Structured day-wise plan</div>
+          </div>
+        </div>
+        <div class="sheet-actions">
+          <a href="sheets/HackWithInfy_DSA_25Day_Plan.pdf" download class="btn-outline">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download
+          </a>
+          <button class="btn-primary" onclick="toggleViewer('viewer-infy', this)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            View Sheet
+          </button>
+        </div>
+      </div>
+      <div id="viewer-infy" class="pdf-viewer">
+        <div id="viewer-infy-content"></div>
+      </div>
+    </div>
+
+    <div class="or-divider"><span>OR</span></div>
+
+    <!-- Striver -->
+    <div class="sheet-card">
+      <div class="sheet-header">
+        <div class="sheet-left">
+          <div class="sheet-icon-wrap sheet-icon-amber">⚡</div>
+          <div class="sheet-meta">
+            <div class="sheet-title">Striver's A2Z DSA Sheet</div>
+            <div class="sheet-sub">Complete DSA roadmap · 455 problems · Best for 7–12 LPA full prep</div>
+          </div>
+        </div>
+        <div class="sheet-actions">
+          <a href="https://takeuforward.org/strivers-a2z-dsa-course/strivers-a2z-dsa-course-sheet-2/" target="_blank" rel="noopener" class="btn-ext">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            Open Striver Sheet
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="alert alert-amber" style="margin-top: 8px;">
+      <span class="alert-icon">⚡</span>
+      <div><strong>Focus topics:</strong> All basics + Trees, Graphs, DP (medium-hard), Tries, Greedy, Bit Manipulation, Sliding Window, Two Pointers, Heap, Backtracking.</div>
+    </div>
+
+    <div class="topics-section">
+      <div class="topics-label">Topics covered in this package</div>
+      <div class="chips-wrap">
+        <span class="chip">Arrays & Strings</span>
+        <span class="chip">Linked List</span>
+        <span class="chip">Trees & BST</span>
+        <span class="chip">Graphs (BFS/DFS)</span>
+        <span class="chip">Dynamic Programming</span>
+        <span class="chip">Greedy Algorithms</span>
+        <span class="chip">Tries</span>
+        <span class="chip">Bit Manipulation</span>
+        <span class="chip">Sliding Window</span>
+        <span class="chip">Two Pointers</span>
+        <span class="chip">Heap / Priority Queue</span>
+        <span class="chip">Backtracking</span>
+        <span class="chip">Segment Trees</span>
+        <span class="chip">Disjoint Set Union</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // Theme
+  const savedTheme = localStorage.getItem('theme') || 'dark';
+  if (savedTheme === 'light') document.documentElement.setAttribute('data-theme', 'light');
+
+  function toggleTheme() {
+    const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+    document.documentElement.setAttribute('data-theme', isLight ? 'dark' : 'light');
+    localStorage.setItem('theme', isLight ? 'dark' : 'light');
+    updateThemeIcon();
+  }
+
+  function updateThemeIcon() {
+    const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+    document.getElementById('theme-icon').innerHTML = isLight
+      ? '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>'
+      : '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
+  }
+  updateThemeIcon();
+
+  // Package switch
+  function switchPkg(pkgId, el) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.pkg-card').forEach(c => c.classList.remove('active'));
+    document.getElementById('panel-' + pkgId).classList.add('active');
+    el.classList.add('active');
+  }
+
+  // PDF viewer toggle
+  function toggleViewer(viewerId, btn) {
+    const viewer = document.getElementById(viewerId);
+    const contentDiv = document.getElementById(viewerId + '-content');
+    const isOpen = viewer.classList.contains('open');
+
+    if (isOpen) {
+      viewer.classList.remove('open');
+      btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> View Sheet';
+    } else {
+      viewer.classList.add('open');
+      btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg> Hide Sheet';
+      if (!contentDiv.innerHTML) {
+        const pdfMap = {
+          'viewer-custom': 'sheets/60_DSA_Questions_Sheet_Shivansh_vasu.pdf',
+          'viewer-infy': 'sheets/HackWithInfy_DSA_25Day_Plan.pdf'
+        };
+        loadPDF(pdfMap[viewerId], contentDiv);
+      }
+    }
+  }
+
+  function loadPDF(path, container) {
+    fetch(path, { method: 'HEAD' })
+      .then(res => {
+        if (res.ok) {
+          container.innerHTML = `<iframe class="pdf-frame" src="${path}" title="DSA Sheet"></iframe>`;
+        } else {
+          showPlaceholder(container, path);
+        }
+      })
+      .catch(() => showPlaceholder(container, path));
+  }
+
+  function showPlaceholder(container, path) {
+    container.innerHTML = `
+      <div class="pdf-placeholder">
+        <div class="placeholder-icon-wrap">📂</div>
+        <h3>PDF not found</h3>
+        <p>Place your file at <code>${path}</code> to display it here.</p>
+      </div>`;
+  }
+</script>
+</body>
+</html>
