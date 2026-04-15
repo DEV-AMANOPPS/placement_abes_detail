@@ -49,7 +49,7 @@ registerForm.addEventListener('submit', async function(e) {
       throw new Error('You are opening the file directly. Please use http://localhost:3000/register.html instead.');
     }
 
-    const res  = await fetch('/api/auth/register', {
+    const res  = await fetch(CONFIG.getApiUrl('/api/auth/register'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name, email, password })
