@@ -24,10 +24,11 @@ const JWT_SECRET = process.env.JWT_SECRET || 'secret_key_123';
 // Middleware to get organization from subdomain
 const getOrganization = async (req, res, next) => {
   try {
-    const host = req.headers.host;
+    const host = req.headers.host || '';
     
     // Skip for localhost/development and main domain - public routes
-    if (host.includes('localhost') || host.includes('127.0.0.1') || host === 'app.placement.com') {
+    const isLocalhost = host.startsWith('localhost') || host.startsWith('127.0.0.1') || host.startsWith('[::1]') || host === '3000' || host.includes(':3000');
+    if (isLocalhost || host === 'app.placement.com') {
       return next();
     }
 
@@ -261,8 +262,6 @@ app.get('/api/stats', authenticateToken, async (req, res) => {
 // 2. Register
 app.post('/api/auth/register', async (req, res) => {
   try {
-    console.log('Register request received:', req.body);
-    console.log('Host header:', req.headers.host);
     const { name, email, password, organizationName, organizationDomain } = req.body;
 
     // Check if user already exists
@@ -276,37 +275,12 @@ app.post('/api/auth/register', async (req, res) => {
       // Registering within existing organization
       organization = req.organization;
     } else {
-      // For localhost/development, create or use default ABES organization
-      console.log('Checking if localhost:', req.headers.host, 'includes localhost:', req.headers.host.includes('localhost'), 'includes 127.0.0.1:', req.headers.host.includes('127.0.0.1'));
-      if (req.headers.host.includes('localhost') || req.headers.host.includes('127.0.0.1')) {
-        console.log('Creating/using default ABES organization for localhost');
-        organization = await Organization.findOne({ domain: 'abes' });
-        if (!organization) {
-          organization = new Organization({
-            name: 'ABES Engineering College',
-            domain: 'abes',
-            plan: 'free'
-          });
-          await organization.save();
-          console.log('Created new ABES organization');
-        }
-      } else {
-        // Production: require organization details
-        console.log('Production mode - requiring organization details');
-        if (!organizationName || !organizationDomain) {
-          return res.status(400).json({ error: 'Organization name and domain are required' });
-        }
-
-        // Check if organization domain already exists
-        const existingOrg = await Organization.findOne({ domain: organizationDomain });
-        if (existingOrg) {
-          return res.status(400).json({ error: 'Organization domain already exists' });
-        }
-
-        // Create new organization
+      // Always use or create default ABES organization
+      organization = await Organization.findOne({ domain: 'abes' });
+      if (!organization) {
         organization = new Organization({
-          name: organizationName,
-          domain: organizationDomain,
+          name: 'ABES Engineering College',
+          domain: 'abes',
           plan: 'free'
         });
         await organization.save();
@@ -337,7 +311,6 @@ app.post('/api/auth/register', async (req, res) => {
       { expiresIn: '7d' }
     );
 
-    console.log('Registration successful for:', email);
     res.json({
       token,
       user: {
@@ -362,24 +335,15 @@ app.post('/api/auth/register', async (req, res) => {
 // 3. Login
 app.post('/api/auth/login', async (req, res) => {
   try {
-    console.log('Login request received:', req.body);
     const { email, password } = req.body;
 
     const user = await User.findOne({ email }).populate('organizationId');
     if (!user || !user.isActive) {
-      console.log('User not found or inactive');
       return res.status(400).json({ error: 'Invalid credentials' });
-    }
-
-    // Check organization context (skip for localhost development)
-    if (req.organization && req.organization._id && user.organizationId && req.organization._id.toString() !== user.organizationId._id.toString()) {
-      console.log('Organization mismatch');
-      return res.status(400).json({ error: 'Invalid credentials for this organization' });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      console.log('Password mismatch');
       return res.status(400).json({ error: 'Invalid credentials' });
     }
 
@@ -392,7 +356,6 @@ app.post('/api/auth/login', async (req, res) => {
       { expiresIn: '7d' }
     );
 
-    console.log('Login successful for:', email);
     res.json({
       token,
       user: {
