@@ -219,6 +219,12 @@ app.use(getOrganization); // Add organization middleware
 // Serve HTML contents
 app.use(express.static(path.join(__dirname)));
 
+// Debug middleware to log all requests
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.path}`);
+  next();
+});
+
 // ----------------------------------------
 // API ROUTES
 // ----------------------------------------
@@ -255,6 +261,8 @@ app.get('/api/stats', authenticateToken, async (req, res) => {
 // 2. Register
 app.post('/api/auth/register', async (req, res) => {
   try {
+    console.log('Register request received:', req.body);
+    console.log('Host header:', req.headers.host);
     const { name, email, password, organizationName, organizationDomain } = req.body;
 
     // Check if user already exists
@@ -269,7 +277,9 @@ app.post('/api/auth/register', async (req, res) => {
       organization = req.organization;
     } else {
       // For localhost/development, create or use default ABES organization
+      console.log('Checking if localhost:', req.headers.host, 'includes localhost:', req.headers.host.includes('localhost'), 'includes 127.0.0.1:', req.headers.host.includes('127.0.0.1'));
       if (req.headers.host.includes('localhost') || req.headers.host.includes('127.0.0.1')) {
+        console.log('Creating/using default ABES organization for localhost');
         organization = await Organization.findOne({ domain: 'abes' });
         if (!organization) {
           organization = new Organization({
@@ -278,9 +288,11 @@ app.post('/api/auth/register', async (req, res) => {
             plan: 'free'
           });
           await organization.save();
+          console.log('Created new ABES organization');
         }
       } else {
         // Production: require organization details
+        console.log('Production mode - requiring organization details');
         if (!organizationName || !organizationDomain) {
           return res.status(400).json({ error: 'Organization name and domain are required' });
         }
@@ -325,6 +337,7 @@ app.post('/api/auth/register', async (req, res) => {
       { expiresIn: '7d' }
     );
 
+    console.log('Registration successful for:', email);
     res.json({
       token,
       user: {
@@ -342,27 +355,31 @@ app.post('/api/auth/register', async (req, res) => {
     });
   } catch (err) {
     console.error('Registration error:', err);
-    res.status(500).json({ error: 'Server error' });
+    res.status(500).json({ error: 'Server error: ' + err.message });
   }
 });
 
 // 3. Login
 app.post('/api/auth/login', async (req, res) => {
   try {
+    console.log('Login request received:', req.body);
     const { email, password } = req.body;
 
     const user = await User.findOne({ email }).populate('organizationId');
     if (!user || !user.isActive) {
+      console.log('User not found or inactive');
       return res.status(400).json({ error: 'Invalid credentials' });
     }
 
-    // Check organization context
-    if (req.organization && req.organization._id.toString() !== user.organizationId._id.toString()) {
+    // Check organization context (skip for localhost development)
+    if (req.organization && req.organization._id && user.organizationId && req.organization._id.toString() !== user.organizationId._id.toString()) {
+      console.log('Organization mismatch');
       return res.status(400).json({ error: 'Invalid credentials for this organization' });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
+      console.log('Password mismatch');
       return res.status(400).json({ error: 'Invalid credentials' });
     }
 
@@ -375,6 +392,7 @@ app.post('/api/auth/login', async (req, res) => {
       { expiresIn: '7d' }
     );
 
+    console.log('Login successful for:', email);
     res.json({
       token,
       user: {
@@ -392,7 +410,7 @@ app.post('/api/auth/login', async (req, res) => {
     });
   } catch (err) {
     console.error('Login error:', err);
-    res.status(500).json({ error: 'Server error' });
+    res.status(500).json({ error: 'Server error: ' + err.message });
   }
 });
 
@@ -619,8 +637,14 @@ app.get('/api/resume/history', authenticateToken, async (req, res) => {
 
 // Fallback all non-API routes to index (for SPA routing if needed)
 app.use((req, res) => {
+  console.log(`Catch-all handler: ${req.method} ${req.path}`);
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+  console.log('Available API routes:');
+  console.log('  POST   /api/auth/register');
+  console.log('  POST   /api/auth/login');
+});
