@@ -6,7 +6,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const path = require('path');
 const multer = require('multer');
-const pdfParse = require('pdf-parse');
+const { PDFParse: pdfParse } = require('pdf-parse');
 const natural = require('natural');
 
 const User = require('./models/User');
@@ -77,145 +77,226 @@ const upload = multer({
 });
 
 // Resume Analysis Keywords and Scoring
+// Expanded Resume Analysis Keywords and Scoring
 const ATS_KEYWORDS = {
-  technical: [
-    'javascript', 'python', 'java', 'c++', 'react', 'node.js', 'html', 'css', 'sql',
-    'git', 'docker', 'aws', 'linux', 'api', 'database', 'algorithm', 'data structure',
-    'machine learning', 'ai', 'cloud', 'devops', 'agile', 'scrum', 'testing'
-  ],
+  technical: {
+    languages: ['javascript', 'python', 'java', 'c++', 'c#', 'ruby', 'go', 'rust', 'php', 'swift', 'kotlin', 'typescript', 'sql', 'html', 'css', 'sass', 'less'],
+    frameworks: ['react', 'angular', 'vue', 'node.js', 'express', 'django', 'flask', 'rails', 'spring boot', '.net', 'laravel', 'bootstrap', 'tailwind', 'next.js', 'nuxt.js', 'svelte', 'fastapi'],
+    database: ['mysql', 'postgresql', 'mongodb', 'redis', 'elasticsearch', 'sqlite', 'mariadb', 'oracle', 'cassandra', 'dynamodb', 'firebase'],
+    cloud: ['aws', 'azure', 'gcp', 'docker', 'kubernetes', 'jenkins', 'terraform', 'ansible', 'linux', 'unix', 'nginx', 'apache', 'cicd', 'gitlab', 'github actions', 'cloud computing'],
+    data: ['machine learning', 'artificial intelligence', 'ai', 'deep learning', 'nlp', 'computer vision', 'data science', 'statistics', 'tableau', 'power bi', 'pandas', 'numpy', 'scikit-learn', 'tensorflow', 'pytorch'],
+    concepts: ['api', 'rest', 'graphql', 'microservices', 'agile', 'scrum', 'testing', 'qa', 'sdlc', 'oops', 'data structures', 'algorithms', 'git', 'version control', 'security', 'penetration testing', 'web sockets']
+  },
   soft: [
     'communication', 'teamwork', 'leadership', 'problem solving', 'analytical',
-    'time management', 'adaptability', 'creativity', 'collaboration', 'initiative'
+    'time management', 'adaptability', 'creativity', 'collaboration', 'initiative',
+    'critical thinking', 'public speaking', 'negotiation', 'customer service', 'project management',
+    'mentorship', 'strategic planning', 'decision making', 'attention to detail'
   ],
   education: [
     'bachelor', 'master', 'phd', 'degree', 'gpa', 'cgpa', 'graduation', 'university',
-    'college', 'engineering', 'computer science', 'information technology'
-  ],
-  experience: [
-    'internship', 'project', 'developed', 'implemented', 'managed', 'led',
-    'achieved', 'improved', 'created', 'designed', 'built'
+    'college', 'engineering', 'computer science', 'information technology', 'software engineering'
   ]
 };
 
+const ACTION_VERBS = [
+  'achieved', 'acquired', 'adapted', 'addressed', 'administered', 'advised', 'analyzed', 'arranged', 'assembled', 'assessed',
+  'authored', 'budgeted', 'built', 'calculated', 'centralized', 'clarified', 'collaborated', 'combined', 'communicated',
+  'completed', 'composed', 'computed', 'conceptualized', 'conducted', 'consolidated', 'constructed', 'consulted', 'contacted',
+  'contributed', 'coordinated', 'corresponded', 'counseled', 'created', 'critiqued', 'cultivated', 'customized', 'debugged',
+  'decided', 'defined', 'delegated', 'delivered', 'demonstrated', 'designed', 'detailed', 'determined', 'developed', 'devised',
+  'directed', 'discovered', 'displayed', 'distributed', 'documented', 'drafted', 'drove', 'edited', 'educated', 'eliminated',
+  'enabled', 'encouraged', 'engineered', 'enlisted', 'established', 'estimated', 'evaluated', 'examined', 'executed', 'expanded',
+  'expedited', 'explained', 'fabricated', 'facilitated', 'fostered', 'founded', 'generated', 'governed', 'guided', 'handled',
+  'harmonized', 'helped', 'identified', 'illustrated', 'implemented', 'improved', 'increased', 'influenced', 'informed',
+  'initiated', 'inspected', 'inspired', 'installed', 'instituted', 'instructed', 'integrated', 'interpreted', 'introduced',
+  'invented', 'investigated', 'joined', 'launched', 'lectured', 'led', 'maintained', 'managed', 'mapped', 'marketed',
+  'mediated', 'mentored', 'modeled', 'modified', 'monitored', 'motivated', 'negotiated', 'observed', 'obtained', 'operated',
+  'optimized', 'orchestrated', 'ordered', 'organized', 'originated', 'overhauled', 'oversaw', 'participated', 'performed',
+  'persuaded', 'photographed', 'pioneered', 'planned', 'prepared', 'presented', 'prioritized', 'processed', 'produced',
+  'programmed', 'projected', 'promoted', 'proofread', 'proposed', 'protected', 'provided', 'publicized', 'purchased',
+  'recorded', 'recruited', 'reduced', 'referred', 'regulated', 'rehabilitated', 'remodeled', 'repaired', 'replaced', 'reported',
+  'represented', 'researched', 'resolved', 'responded', 'restructured', 'retrieved', 'reviewed', 'revised', 'revitalized',
+  'scheduled', 'screened', 'selected', 'served', 'shaped', 'simplified', 'simulated', 'sketched', 'solved', 'sorted',
+  'spearheaded', 'specialized', 'sponsored', 'staffed', 'standardized', 'stimulated', 'streamlined', 'strengthened', 'structured',
+  'studied', 'supervised', 'supported', 'surveyed', 'synthesized', 'tabulated', 'taught', 'trained', 'translated', 'upgraded',
+  'validated', 'visited', 'wrote'
+];
+
 const INDUSTRY_KEYWORDS = {
-  software: ['software engineer', 'developer', 'programmer', 'coding', 'full stack', 'backend', 'frontend'],
-  data: ['data analyst', 'data scientist', 'machine learning', 'ai', 'statistics', 'analytics'],
-  web: ['web developer', 'ui/ux', 'frontend', 'react', 'angular', 'vue'],
-  mobile: ['mobile developer', 'ios', 'android', 'flutter', 'react native']
+  software: ['software engineer', 'developer', 'programmer', 'coding', 'full stack', 'backend', 'frontend', 'sde'],
+  data: ['data analyst', 'data scientist', 'machine learning', 'ai', 'statistics', 'analytics', 'data engineer'],
+  web: ['web developer', 'ui/ux', 'frontend', 'react', 'angular', 'vue', 'web design'],
+  mobile: ['mobile developer', 'ios', 'android', 'flutter', 'react native', 'mobile app'],
+  cloud: ['cloud engineer', 'devops', 'aws associate', 'azure expert', 'sre', 'reliability engineer']
 };
 
 function analyzeResume(text) {
   const lowerText = text.toLowerCase();
   const words = text.split(/\s+/);
-  const sentences = text.split(/[.!?]+/);
+  
+  // 1. ADVANCED STRUCTURAL ANALYSIS (20 pts)
+  const structuralMetrics = {
+    hasEmail: /[\w\.-]+@[\w\.-]+\.\w{2,}/.test(text),
+    hasPhone: /\b\d{10}\b|\b\d{3}[-.]?\d{3}[-.]?\d{4}\b/.test(text),
+    hasLinkedIn: /linkedin\.com\/in\/[\w-]+/i.test(text),
+    hasGithub: /github\.com\/[\w-]+/i.test(text),
+    hasPortfolio: /portfolio|personal site|website/i.test(text) || /(www\.)?[\w-]+\.(com|io|me|dev|net)\b/i.test(text),
+    
+    hasSummary: /summary|objective|profile|professional profile/i.test(text),
+    hasExperience: /experience|work history|employment|work experience/i.test(text),
+    hasEducation: /education|academic background|degree/i.test(text),
+    hasSkills: /skills|technical skills|competencies|technologies/i.test(text),
+    hasProjects: /projects|academic projects|personal projects/i.test(text),
+    hasCertifications: /certifications?|awards?|honors?|certificates?/i.test(text)
+  };
 
-  // Basic structure analysis
-  const hasContact = /\b[\w\.-]+@[\w\.-]+\.\w{2,}\b|\b\d{10}\b|\b\d{3}[-.]?\d{3}[-.]?\d{4}\b/.test(text);
-  const hasSummary = /summary|objective|profile/i.test(text);
-  const hasExperience = /experience|work|employment|internship/i.test(text);
-  const hasEducation = /education|degree|university|college/i.test(text);
-  const hasSkills = /skills|technologies|tools/i.test(text);
-  const hasProjects = /projects?|portfolio/i.test(text);
+  let structuralScore = 0;
+  if (structuralMetrics.hasEmail && structuralMetrics.hasPhone) structuralScore += 4;
+  if (structuralMetrics.hasLinkedIn) structuralScore += 3;
+  if (structuralMetrics.hasGithub || structuralMetrics.hasPortfolio) structuralScore += 3;
+  if (structuralMetrics.hasSummary) structuralScore += 2;
+  if (structuralMetrics.hasExperience) structuralScore += 2;
+  if (structuralMetrics.hasEducation) structuralScore += 2;
+  if (structuralMetrics.hasSkills) structuralScore += 2;
+  if (structuralMetrics.hasProjects || structuralMetrics.hasCertifications) structuralScore += 2;
 
-  // Keyword analysis
-  let keywordScore = 0;
-  let foundKeywords = { technical: [], soft: [], education: [], experience: [] };
-
-  Object.keys(ATS_KEYWORDS).forEach(category => {
-    ATS_KEYWORDS[category].forEach(keyword => {
-      if (lowerText.includes(keyword.toLowerCase())) {
-        keywordScore += 2;
-        foundKeywords[category].push(keyword);
+  // 2. TECHNICAL KEYWORD DEPTH (30 pts)
+  let foundKeywords = { technical: [], soft: [], education: [], industry: [], technicalByCat: {} };
+  let keywordPoints = 0;
+  
+  // Evaluate Technical Skills (Languages, Frameworks, etc.)
+  let techCategoriesFound = 0;
+  Object.keys(ATS_KEYWORDS.technical).forEach(cat => {
+    let foundInCat = [];
+    ATS_KEYWORDS.technical[cat].forEach(kw => {
+      if (lowerText.includes(kw.toLowerCase())) {
+        foundInCat.push(kw);
       }
     });
-  });
-
-  // Industry-specific analysis
-  let industryMatch = 'general';
-  let industryScore = 0;
-  Object.keys(INDUSTRY_KEYWORDS).forEach(industry => {
-    const matches = INDUSTRY_KEYWORDS[industry].filter(kw =>
-      lowerText.includes(kw.toLowerCase())
-    ).length;
-    if (matches > industryScore) {
-      industryScore = matches;
-      industryMatch = industry;
+    if (foundInCat.length > 0) {
+      techCategoriesFound++;
+      foundKeywords.technical.push(...foundInCat);
+      foundKeywords.technicalByCat[cat] = {
+        found: foundInCat,
+        total: ATS_KEYWORDS.technical[cat].length
+      };
+      console.log(`[DEBUG] Category Found: ${cat}`, foundInCat);
+      keywordPoints += Math.min(foundInCat.length * 1, 5); 
     }
   });
+  console.log(`[DEBUG] Technical Keywords Grouped:`, Object.keys(foundKeywords.technicalByCat));
+  
+  // Score Technical Keywords (Max 30)
+  const keywordScore = Math.min((keywordPoints + (techCategoriesFound * 2)), 30);
 
-  // Length and formatting analysis
+  // 3. SOFT SKILLS & EDUCATION (Evaluated as part of keywords or bonus)
+  ATS_KEYWORDS.soft.forEach(kw => {
+    if (lowerText.includes(kw.toLowerCase())) foundKeywords.soft.push(kw);
+  });
+  ATS_KEYWORDS.education.forEach(kw => {
+    if (lowerText.includes(kw.toLowerCase())) foundKeywords.education.push(kw);
+  });
+
+  // 4. INDUSTRY ALIGNMENT (5 pts bonus included in final calc)
+  let industryMatch = 'General';
+  let maxIndustryScore = 0;
+  Object.keys(INDUSTRY_KEYWORDS).forEach(industry => {
+    const matches = INDUSTRY_KEYWORDS[industry].filter(kw => lowerText.includes(kw.toLowerCase())).length;
+    foundKeywords.industry.push(...INDUSTRY_KEYWORDS[industry].filter(kw => lowerText.includes(kw.toLowerCase())));
+    if (matches > maxIndustryScore) {
+      maxIndustryScore = matches;
+      industryMatch = industry.charAt(0).toUpperCase() + industry.slice(1);
+    }
+  });
+  const industryScore = Math.min(maxIndustryScore * 1, 5);
+
+  // 5. ACTION VERBS (15 pts)
+  const foundVerbs = ACTION_VERBS.filter(verb => lowerText.includes(verb));
+  const uniqueVerbs = new Set(foundVerbs);
+  const actionScore = Math.min(uniqueVerbs.size * 1, 15);
+
+  // 6. QUANTIFIABLE IMPACT & METRICS (20 pts)
+  const metricPatterns = [
+    /\d+%/g, // Percentages
+    /\$[\d,MKB]+/g, // Money
+    /\b\d+\+\s+(users|clients|projects|tasks|team members)\b/gi, // X+ users/etc
+    /\b(increased|reduced|improved|saved|delivered)\s+[\w\s]{0,20}\d+/gi, // Action + Number
+    /\b(million|billion|k)\b/gi // Scale indicators
+  ];
+  let metricCount = 0;
+  metricPatterns.forEach(pattern => {
+    const matches = text.match(pattern);
+    if (matches) metricCount += matches.length;
+  });
+  const quantifiableScore = Math.min(metricCount * 3, 20);
+
+  // 7. READABILITY & FORMAT (10 pts)
   const wordCount = words.length;
-  const pageEstimate = Math.ceil(wordCount / 300); // Rough estimate
-  const lengthScore = wordCount > 200 && wordCount < 800 ? 20 : wordCount < 200 ? 5 : 10;
+  let readabilityScore = 0;
+  if (wordCount >= 400 && wordCount <= 800) readabilityScore = 10;
+  else if (wordCount >= 300 && wordCount < 900) readabilityScore = 7;
+  else if (wordCount > 150) readabilityScore = 4;
+  else readabilityScore = 1;
 
-  // Action verb analysis
-  const actionVerbs = ['developed', 'created', 'implemented', 'managed', 'led', 'achieved',
-                      'improved', 'designed', 'built', 'launched', 'optimized', 'increased'];
-  const actionVerbCount = actionVerbs.filter(verb => lowerText.includes(verb)).length;
-  const actionScore = Math.min(actionVerbCount * 3, 15);
-
-  // Quantifiable achievements
-  const quantifiablePatterns = [/\d+%/, /\$\d+/, /\d+ (users|customers|projects|tasks)/i];
-  const quantifiableCount = quantifiablePatterns.filter(pattern => pattern.test(text)).length;
-  const quantifiableScore = Math.min(quantifiableCount * 5, 15);
-
-  // Calculate ATS score (0-100)
+  // FINAL ATS SCORE CALCULATION (Weighted)
   const atsScore = Math.min(Math.round(
-    (keywordScore * 0.4) +
-    (lengthScore * 0.2) +
-    (actionScore * 0.15) +
-    (quantifiableScore * 0.15) +
-    ((hasContact && hasSummary && hasExperience && hasEducation && hasSkills) ? 10 : 5) +
-    (industryScore * 2)
+    structuralScore +      // 20
+    keywordScore +         // 30
+    actionScore +          // 15
+    quantifiableScore +    // 20
+    readabilityScore +     // 10
+    industryScore          // 5 (Bonus/Alignment)
   ), 100);
 
-  // Generate suggestions
+  // Generate Suggestions
   const suggestions = [];
-
-  if (!hasContact) suggestions.push("Add contact information (email, phone) at the top");
-  if (!hasSummary) suggestions.push("Include a professional summary/objective (2-3 sentences)");
-  if (!hasExperience) suggestions.push("Add work experience section with job descriptions");
-  if (!hasEducation) suggestions.push("Include education details with degree and institution");
-  if (!hasSkills) suggestions.push("Add a skills section with relevant technologies");
-  if (!hasProjects) suggestions.push("Include projects section to showcase practical experience");
-
-  if (keywordScore < 20) suggestions.push("Add more industry-specific keywords relevant to your target roles");
-  if (actionVerbCount < 3) suggestions.push("Use more action verbs (developed, created, implemented, managed, led)");
-  if (quantifiableCount < 2) suggestions.push("Include quantifiable achievements with numbers and percentages");
-  if (wordCount < 200) suggestions.push("Resume is too short - aim for 300-600 words");
-  if (wordCount > 800) suggestions.push("Resume is too long - keep it concise and relevant");
+  if (!structuralMetrics.hasEmail || !structuralMetrics.hasPhone) suggestions.push("CRITICAL: Add standardized contact info (email/phone).");
+  if (!structuralMetrics.hasLinkedIn) suggestions.push("Add your LinkedIn profile to increase recruiter trust.");
+  if (!structuralMetrics.hasGithub && industryMatch === 'Software') suggestions.push("Github link is highly recommended for developers.");
+  
+  if (quantifiableScore < 10) suggestions.push("Use more numbers and percentages (e.g., 'Improved performance by 20%') to show impact.");
+  if (actionScore < 8) suggestions.push("Start bullet points with strong action verbs (e.g., 'Spearheaded', 'Orchestrated').");
+  if (keywordScore < 15) suggestions.push("Keywords are sparse. Audit your tech stack and add specific tools/libraries you know.");
+  
+  if (wordCount < 400) suggestions.push("Resume is light (under 400 words). Expand on your project responsibilities.");
+  if (wordCount > 1000) suggestions.push("Resume is overly long. Condense sections to keep it to 1-2 pages maximum.");
 
   // Strengths
   const strengths = [];
-  if (atsScore >= 80) strengths.push("Excellent ATS compatibility with strong keyword presence");
-  if (actionVerbCount >= 5) strengths.push("Good use of action verbs demonstrating achievements");
-  if (quantifiableCount >= 3) strengths.push("Strong quantifiable achievements showing impact");
-  if (hasContact && hasSummary && hasExperience && hasEducation && hasSkills && hasProjects) {
-    strengths.push("Complete resume structure with all essential sections");
-  }
-  if (industryScore >= 3) strengths.push(`Well-aligned with ${industryMatch} industry requirements`);
+  if (atsScore >= 80) strengths.push("Strong candidate match with excellent keyword density.");
+  if (actionScore >= 12) strengths.push("Exceptional use of strong action verbs.");
+  if (quantifiableScore >= 15) strengths.push("Highly data-driven resume with clear achievement metrics.");
+  if (structuralScore >= 18) strengths.push("Professional formatting with all critical sections present.");
+  if (industryScore >= 3) strengths.push(`Well-calibrated for the ${industryMatch} industry.`);
 
   return {
     atsScore,
     breakdown: {
-      keywordScore: Math.min(keywordScore, 40),
-      structureScore: (hasContact && hasSummary && hasExperience && hasEducation && hasSkills) ? 20 : 10,
-      contentScore: lengthScore + actionScore + quantifiableScore,
-      industryScore: Math.min(industryScore * 2, 10)
+      keywordScore: keywordScore,
+      structureScore: structuralScore,
+      contentScore: actionScore + quantifiableScore,
+      industryScore: industryScore,
+      readabilityScore: readabilityScore
     },
     strengths,
     suggestions,
-    keywords: foundKeywords,
+    keywords: {
+      technical: [...new Set(foundKeywords.technical)],
+      soft: [...new Set(foundKeywords.soft)],
+      industry: [...new Set(foundKeywords.industry)],
+      technicalByCat: foundKeywords.technicalByCat
+    },
     metrics: {
       wordCount,
-      pageEstimate,
-      actionVerbs: actionVerbCount,
-      quantifiableAchievements: quantifiableCount,
-      keywordMatches: Object.values(foundKeywords).flat().length
+      actionVerbs: uniqueVerbs.size,
+      quantifiableAchievements: metricCount,
+      relevanceRank: industryMatch
     },
     industry: industryMatch,
     grade: atsScore >= 90 ? 'A+' : atsScore >= 80 ? 'A' : atsScore >= 70 ? 'B+' :
-           atsScore >= 60 ? 'B' : atsScore >= 50 ? 'C+' : atsScore >= 40 ? 'C' : 'D'
+           atsScore >= 60 ? 'B' : atsScore >= 50 ? 'C+' : atsScore >= 40 ? 'C' : 'D',
+    structuralMetrics
   };
 }
 
@@ -321,7 +402,8 @@ app.post('/api/auth/login', async (req, res) => {
     const token = jwt.sign(
       { 
         id: user._id, 
-        email: user.email, 
+        email: user.email,
+        name: user.name,
         role: user.role, 
         organizationId: user.organizationId 
       }, 
@@ -332,7 +414,7 @@ app.post('/api/auth/login', async (req, res) => {
     // Update lastLogin
     user.lastLogin = new Date();
     await user.save();
-    res.json({ message: 'Login successful', token, role: user.role });
+    res.json({ message: 'Login successful', token, role: user.role, name: user.name });
   } catch (err) {
     console.error('Login error:', err);
     res.status(500).json({ error: 'Server error' });
@@ -523,10 +605,20 @@ app.post('/api/resume/analyze', upload.single('resume'), async (req, res) => {
     if (req.file) {
       // Handle file upload
       if (req.file.mimetype === 'application/pdf') {
-        const data = await pdfParse(req.file.buffer);
-        resumeText = data.text;
+        console.log('Processing PDF resume, buffer size:', req.file.buffer.length);
+        try {
+          const parser = new pdfParse({ data: req.file.buffer });
+          const data = await parser.getText();
+          resumeText = data.text;
+          console.log('PDF text extracted, length:', resumeText ? resumeText.length : 0);
+          await parser.destroy();
+        } catch (parseErr) {
+          console.error('PDF parsing failed:', parseErr);
+          throw parseErr;
+        }
       } else if (req.file.mimetype === 'text/plain') {
         resumeText = req.file.buffer.toString('utf-8');
+        console.log('Text resume processed, length:', resumeText.length);
       }
     } else if (req.body.text) {
       // Handle text input
@@ -540,7 +632,9 @@ app.post('/api/resume/analyze', upload.single('resume'), async (req, res) => {
     }
 
     // Analyze the resume
+    console.log('Analyzing resume text...');
     const analysis = analyzeResume(resumeText);
+    console.log('Analysis complete. ATS Score:', analysis.atsScore);
 
     res.json({
       success: true,
@@ -549,8 +643,12 @@ app.post('/api/resume/analyze', upload.single('resume'), async (req, res) => {
     });
 
   } catch (err) {
-    console.error('Resume analysis error:', err);
-    res.status(500).json({ error: 'Failed to analyze resume' });
+    console.error('Detailed Resume analysis error:', err);
+    res.status(500).json({ 
+      error: 'Failed to analyze resume', 
+      details: err.message,
+      stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+    });
   }
 });
 
