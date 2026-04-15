@@ -44,6 +44,11 @@ registerForm.addEventListener('submit', async function(e) {
   msgDiv.textContent = '';
 
   try {
+    // Check if the user is accidentally opening the file via file:// protocol
+    if (window.location.protocol === 'file:') {
+      throw new Error('You are opening the file directly. Please use http://localhost:3000/register.html instead.');
+    }
+
     const res  = await fetch('/api/auth/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -62,8 +67,11 @@ registerForm.addEventListener('submit', async function(e) {
       registerBtn.disabled = false;
     }
   } catch (err) {
+    console.error('Registration Error Details:', err);
     msgDiv.className  = 'message-box error';
-    msgDiv.textContent = 'Network error. Is the server running?';
+    msgDiv.textContent = err.message.includes('opening the file directly') 
+      ? err.message 
+      : 'Network error. Is the server running on port 3000?';
     registerBtn.classList.remove('loading');
     registerBtn.disabled = false;
   }

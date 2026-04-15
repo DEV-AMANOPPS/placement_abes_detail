@@ -305,8 +305,8 @@ app.use(express.json());
 app.use(cors());
 app.use(getOrganization); // Add organization middleware
 
-// Serve HTML contents
-app.use(express.static(path.join(__dirname)));
+// Serve HTML contents from the frontend directory
+app.use(express.static(path.join(__dirname, '..', 'frontend')));
 
 // ----------------------------------------
 // API ROUTES
@@ -665,10 +665,10 @@ app.get('/api/resume/history', authenticateToken, async (req, res) => {
   }
 });
 
-// Fallback all non-API routes to index (for SPA routing if needed)
+// Fallback all non-API routes to index.html in the frontend directory
 app.use((req, res) => {
   console.log(`Catch-all handler: ${req.method} ${req.path}`);
-  res.sendFile(path.join(__dirname, 'index.html'));
+  res.sendFile(path.join(__dirname, '..', 'frontend', 'index.html'));
 });
 
 const PORT = process.env.PORT || 3000;
