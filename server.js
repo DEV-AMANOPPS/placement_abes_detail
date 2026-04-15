@@ -27,20 +27,27 @@ const getOrganization = async (req, res, next) => {
     const host = req.headers.host || '';
     
     // Skip for localhost/development and main domain - public routes
-    const isLocalhost = host.startsWith('localhost') || host.startsWith('127.0.0.1') || host.startsWith('[::1]') || host === '3000' || host.includes(':3000');
-    if (isLocalhost || host === 'app.placement.com') {
+    const isLocalhost = host.startsWith('localhost') || host.startsWith('127.0.0.1') || host.startsWith('[::1]') || host.includes(':3000');
+    if (isLocalhost || host === 'app.placement.com' || host === 'placement.com') {
       return next();
     }
 
-    const subdomain = host.split('.')[0];
+    // Improved subdomain extraction
+    const parts = host.split('.');
+    if (parts.length < 2) return next();
+    
+    const subdomain = parts[0];
     const organization = await Organization.findOne({ domain: subdomain });
     if (!organization) {
-      return res.status(404).json({ error: 'Organization not found' });
+      // If we're on a subdomain that doesn't exist, we might want to redirect or error
+      // For now, just continue without req.organization
+      return next();
     }
 
     req.organization = organization;
     next();
   } catch (err) {
+    console.error('getOrganization error:', err);
     res.status(500).json({ error: 'Server error' });
   }
 };
@@ -227,25 +234,36 @@ app.use(express.static(path.join(__dirname)));
 // 1. Get application stats
 app.get('/api/stats', async (req, res) => {
   try {
-    const totalOrgs = await Organization.countDocuments();
-    const totalUsers = await User.countDocuments();
-    return res.json({ totalOrganizations: totalOrgs, totalUsers });
+    const stats = {};
+    
+    // Global stats (accessible to everyone or just super admins? assuming public for now)
+    stats.global = {
+      totalOrganizations: await Organization.countDocuments(),
+      totalUsers: await User.countDocuments()
+    };
 
-    // Organization-specific stats
-    const userCount = await User.countDocuments({ organizationId: req.organization._id, isActive: true });
-    const activeUsers = await User.countDocuments({
-      organizationId: req.organization._id,
-      isActive: true,
-      lastLogin: { $gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) } // Last 30 days
-    });
+    // Organization-specific stats if context is available
+    if (req.organization) {
+      const orgId = req.organization._id;
+      const userCount = await User.countDocuments({ organizationId: orgId, isActive: true });
+      const activeUsers = await User.countDocuments({
+        organizationId: orgId,
+        isActive: true,
+        lastLogin: { $gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) }
+      });
 
-    res.json({
-      totalUsers: userCount,
-      activeUsers,
-      plan: req.organization.plan,
-      subscriptionStatus: req.organization.subscriptionStatus
-    });
+      stats.organization = {
+        name: req.organization.name,
+        totalUsers: userCount,
+        activeUsers,
+        plan: req.organization.plan,
+        subscriptionStatus: req.organization.subscriptionStatus
+      };
+    }
+
+    res.json(stats);
   } catch (err) {
+    console.error('Stats error:', err);
     res.status(500).json({ error: 'Server error' });
   }
 });
@@ -267,7 +285,20 @@ app.post('/api/auth/register', async (req, res) => {
     }
 
     const hashed = await bcrypt.hash(password, 10);
-    const user = new User({ name, email, password: hashed, isActive: true });
+    
+    const userPayload = { 
+      name, 
+      email, 
+      password: hashed, 
+      isActive: true 
+    };
+
+    // Associate with organization if registering on a subdomain
+    if (req.organization) {
+      userPayload.organizationId = req.organization._id;
+    }
+
+    const user = new User(userPayload);
     await user.save();
     res.json({ message: 'Registration successful' });
   } catch (err) {
@@ -287,11 +318,21 @@ app.post('/api/auth/login', async (req, res) => {
     const match = await bcrypt.compare(password, user.password);
     if (!match) return res.status(401).json({ error: 'Invalid credentials' });
 
-    const token = jwt.sign({ id: user._id, email: user.email }, JWT_SECRET, { expiresIn: '1d' });
+    const token = jwt.sign(
+      { 
+        id: user._id, 
+        email: user.email, 
+        role: user.role, 
+        organizationId: user.organizationId 
+      }, 
+      JWT_SECRET, 
+      { expiresIn: '1d' }
+    );
+    
     // Update lastLogin
     user.lastLogin = new Date();
     await user.save();
-    res.json({ message: 'Login successful', token });
+    res.json({ message: 'Login successful', token, role: user.role });
   } catch (err) {
     console.error('Login error:', err);
     res.status(500).json({ error: 'Server error' });
@@ -535,5 +576,18 @@ app.use((req, res) => {
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
-  console.log('Available API routes:');
+  console.log('\nAvailable API routes:');
+  console.log('--------------------');
+  console.log('GET  /api/stats');
+  console.log('POST /api/auth/register');
+  console.log('POST /api/auth/login');
+  console.log('GET  /api/organization (Auth)');
+  console.log('PUT  /api/organization (Auth)');
+  console.log('GET  /api/organization/users (Auth)');
+  console.log('PUT  /api/users/:userId/role (Auth)');
+  console.log('GET  /api/subscription (Auth)');
+  console.log('POST /api/subscription/upgrade (Auth)');
+  console.log('POST /api/resume/analyze');
+  console.log('GET  /api/resume/history (Auth)');
+  console.log('--------------------\n');
 });
