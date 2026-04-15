@@ -6,6 +6,7 @@
 <title>ABES Placement Prep 2025</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="config.js"></script>
 <script src="auth.js"></script>
 <style>
   :root {
@@ -1363,6 +1364,8 @@ GROUP BY dept HAVING COUNT(*) &gt; 5;
     </div>
   </div>
 
+<!-- Configuration -->
+<script src="config.js"></script>
 <script>
   // Theme Toggle Logic
   const savedTheme = localStorage.getItem('theme') || 'dark';
@@ -1436,7 +1439,7 @@ GROUP BY dept HAVING COUNT(*) &gt; 5;
   // Auth and Stats
   async function fetchStats() {
     try {
-      const res = await fetch('/api/stats');
+      const res = await fetch(CONFIG.getApiUrl('/api/stats'));
       const data = await res.json();
       if(data.totalUsers) {
         document.getElementById('registered-count').innerText = data.totalUsers.toLocaleString() + ' Students Registered';
@@ -1512,7 +1515,7 @@ GROUP BY dept HAVING COUNT(*) &gt; 5;
       const formData = new FormData();
       formData.append('resume', uploadedPdfFile);
 
-      const response = await fetch('/api/resume/analyze', {
+      const response = await fetch(CONFIG.getApiUrl('/api/resume/analyze'), {
         method: 'POST',
         body: formData
       });

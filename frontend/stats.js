@@ -19,7 +19,7 @@ function animateNumber(el, from, to, duration = 600) {
 
 async function fetchAndUpdateStats() {
   try {
-    const res = await fetch('/api/stats');
+    const res = await fetch(CONFIG.getApiUrl('/api/stats'));
     if (!res.ok) return;
     const data = await res.json();
 

@@ -16,14 +16,13 @@ loginForm.addEventListener('submit', async function(e) {
   loginBtn.disabled = true;
   msgDiv.className = 'message-box';
   msgDiv.textContent = '';
-
   try {
     // Check if the user is accidentally opening the file via file:// protocol
     if (window.location.protocol === 'file:') {
       throw new Error('You are opening the file directly. Please use http://localhost:3000/login.html instead.');
     }
 
-    const res  = await fetch('/api/auth/login', {
+    const res  = await fetch(CONFIG.getApiUrl('/api/auth/login'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password })
