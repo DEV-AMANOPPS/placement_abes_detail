@@ -382,11 +382,7 @@
             <circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
           </svg>
         </button>
-        <div id="authButtons" style="display: flex; gap: 10px;">
-          <a href="login.html" style="padding: 9px 18px; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; background: transparent; border: 1px solid var(--border); color: var(--text); border-radius: 10px; font-size:0.82rem; font-weight:600; transition:all 0.2s;">Login</a>
-          <a href="register.html" style="padding: 9px 18px; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; background: linear-gradient(135deg,var(--accent),#4c1d95); color: white; border: none; border-radius: 10px; font-size:0.82rem; font-weight:600; box-shadow:0 4px 14px var(--accent-glow); transition:all 0.2s;">Sign Up</a>
-        </div>
-        <a href="admin.html" style="padding: 9px 18px; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.1); color: var(--text); border: 1px solid var(--border); border-radius: 10px; font-size:0.82rem; font-weight:600; transition:all 0.2s; font-family:inherit;">Admin Portal</a>
+          <a href="admin.html" style="padding: 9px 18px; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.1); color: var(--text); border: 1px solid var(--border); border-radius: 10px; font-size:0.82rem; font-weight:600; transition:all 0.2s; font-family:inherit;">Admin Portal</a>
       </div>
     </header>
 
@@ -1379,28 +1375,8 @@ GROUP BY dept HAVING COUNT(*) &gt; 5;
     }
   }
 
-  function checkAuth() {
-    const token = localStorage.getItem('token');
-    const user = JSON.parse(localStorage.getItem('user') || 'null');
-    const authContainer = document.getElementById('authButtons');
-    const greetingText = document.getElementById('greetingText');
-    if(token && user) {
-      greetingText.innerText = `Welcome, ${user.name} 👋`;
-      if(authContainer) {
-        authContainer.innerHTML = `<button onclick="logout()" style="padding: 9px 18px; font-size:0.82rem; font-weight:600; text-decoration: none; border: 1px solid var(--border); border-radius: 10px; background: transparent; cursor: pointer; color: var(--text);">Logout</button>`;
-      }
-    }
-  }
-
-  function logout() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    window.location.reload();
-  }
-
   document.addEventListener('DOMContentLoaded', () => {
     fetchStats();
-    checkAuth();
   });
 
   // ==========================================
@@ -1464,20 +1440,11 @@ GROUP BY dept HAVING COUNT(*) &gt; 5;
       document.getElementById('extractedTextBox').textContent = fullText.trim() || 'No text could be extracted. Try a different PDF.';
 
       // Send to backend API for analysis
-      const token = localStorage.getItem('token');
-      if (!token) {
-        alert('Please login to analyze your resume');
-        return;
-      }
-
       const formData = new FormData();
       formData.append('resume', uploadedPdfFile);
 
       const response = await fetch('/api/resume/analyze', {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        },
         body: formData
       });
 
@@ -1775,5 +1742,6 @@ GROUP BY dept HAVING COUNT(*) &gt; 5;
 
 
 </script>
+<script src="stats.js"></script>
 </body>
 </html>

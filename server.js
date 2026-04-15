@@ -225,14 +225,11 @@ app.use(express.static(path.join(__dirname)));
 // ----------------------------------------
 
 // 1. Get application stats
-app.get('/api/stats', authenticateToken, async (req, res) => {
+app.get('/api/stats', async (req, res) => {
   try {
-    if (!req.organization) {
-      // Public stats for main domain
-      const totalOrgs = await Organization.countDocuments();
-      const totalUsers = await User.countDocuments();
-      return res.json({ totalOrganizations: totalOrgs, totalUsers });
-    }
+    const totalOrgs = await Organization.countDocuments();
+    const totalUsers = await User.countDocuments();
+    return res.json({ totalOrganizations: totalOrgs, totalUsers });
 
     // Organization-specific stats
     const userCount = await User.countDocuments({ organizationId: req.organization._id, isActive: true });
@@ -253,115 +250,64 @@ app.get('/api/stats', authenticateToken, async (req, res) => {
   }
 });
 
-// 2. Register
+// 2. Public registration/login
+
 app.post('/api/auth/register', async (req, res) => {
   try {
     const { name, email, password } = req.body;
+    if (!name || !email || !password) return res.status(400).json({ error: 'All fields are required' });
 
-    // Check if user already exists
-    let existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({ error: 'User already exists' });
+    const existing = await User.findOne({ email });
+    if (existing) return res.status(409).json({ error: 'User already exists' });
+
+    // Basic fake user detection (block obvious disposable/test emails)
+    const fakePatterns = [/test/i, /mailinator\.com$/i, /tempmail/i];
+    if (fakePatterns.some((pat) => pat.test(email))) {
+      return res.status(400).json({ error: 'Fake or disposable email detected' });
     }
 
-    // Use or create a default organization for auth
-    let organization = await Organization.findOne({ domain: 'abes' });
-    if (!organization) {
-      organization = new Organization({
-        name: 'ABES Engineering College',
-        domain: 'abes',
-        plan: 'free'
-      });
-      await organization.save();
-    }
-
-    // Create user
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-
-    const user = new User({
-      name,
-      email,
-      password: hashedPassword,
-      organizationId: organization._id,
-      role: 'user'
-    });
+    const hashed = await bcrypt.hash(password, 10);
+    const user = new User({ name, email, password: hashed, isActive: true });
     await user.save();
-
-    // Update organization stats
-    await Organization.findByIdAndUpdate(organization._id, {
-      $inc: { 'stats.totalUsers': 1, 'stats.activeUsers': 1 }
-    });
-
-    const token = jwt.sign(
-      { id: user._id, organizationId: organization._id, role: user.role },
-      JWT_SECRET,
-      { expiresIn: '7d' }
-    );
-
-    res.json({
-      token,
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        organization: {
-          id: organization._id,
-          name: organization.name,
-          domain: organization.domain,
-          plan: organization.plan
-        }
-      }
-    });
+    res.json({ message: 'Registration successful' });
   } catch (err) {
-    console.error('Registration error:', err);
-    res.status(500).json({ error: 'Server error: ' + err.message });
+    console.error('Register error:', err);
+    res.status(500).json({ error: 'Server error' });
   }
 });
 
-// 3. Login
 app.post('/api/auth/login', async (req, res) => {
   try {
     const { email, password } = req.body;
+    if (!email || !password) return res.status(400).json({ error: 'Email and password required' });
 
-    const user = await User.findOne({ email }).populate('organizationId');
-    if (!user || !user.isActive) {
-      return res.status(400).json({ error: 'Invalid credentials' });
-    }
+    const user = await User.findOne({ email, isActive: true });
+    if (!user) return res.status(401).json({ error: 'Invalid credentials' });
 
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(400).json({ error: 'Invalid credentials' });
-    }
+    const match = await bcrypt.compare(password, user.password);
+    if (!match) return res.status(401).json({ error: 'Invalid credentials' });
 
-    // Update last login
-    await User.findByIdAndUpdate(user._id, { lastLogin: new Date() });
-
-    const token = jwt.sign(
-      { id: user._id, organizationId: user.organizationId._id, role: user.role },
-      JWT_SECRET,
-      { expiresIn: '7d' }
-    );
-
-    res.json({
-      token,
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        organization: {
-          id: user.organizationId._id,
-          name: user.organizationId.name,
-          domain: user.organizationId.domain,
-          plan: user.organizationId.plan
-        }
-      }
-    });
+    const token = jwt.sign({ id: user._id, email: user.email }, JWT_SECRET, { expiresIn: '1d' });
+    // Update lastLogin
+    user.lastLogin = new Date();
+    await user.save();
+    res.json({ message: 'Login successful', token });
   } catch (err) {
     console.error('Login error:', err);
-    res.status(500).json({ error: 'Server error: ' + err.message });
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// Admin route: remove fake users matching simple patterns
+app.delete('/api/admin/remove-fake-users', async (req, res) => {
+  try {
+    const fakePatterns = ['test', 'mailinator.com', 'tempmail'];
+    const orClauses = fakePatterns.map(p => ({ email: { $regex: p, $options: 'i' } }));
+    const result = await User.deleteMany({ $or: orClauses });
+    res.json({ removed: result.deletedCount });
+  } catch (err) {
+    console.error('Remove fake users error:', err);
+    res.status(500).json({ error: 'Server error' });
   }
 });
 
@@ -529,7 +475,7 @@ app.post('/api/subscription/upgrade', authenticateToken, async (req, res) => {
 // ----------------------------------------
 
 // 10. Analyze resume
-app.post('/api/resume/analyze', authenticateToken, upload.single('resume'), async (req, res) => {
+app.post('/api/resume/analyze', upload.single('resume'), async (req, res) => {
   try {
     let resumeText = '';
 
@@ -554,12 +500,6 @@ app.post('/api/resume/analyze', authenticateToken, upload.single('resume'), asyn
 
     // Analyze the resume
     const analysis = analyzeResume(resumeText);
-
-    // Update user's resume score in database
-    await User.findByIdAndUpdate(req.user.id, {
-      resumeScore: analysis.atsScore,
-      lastLogin: new Date()
-    });
 
     res.json({
       success: true,
@@ -596,6 +536,4 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
   console.log('Available API routes:');
-  console.log('  POST   /api/auth/register');
-  console.log('  POST   /api/auth/login');
 });
