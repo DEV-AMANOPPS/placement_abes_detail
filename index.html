@@ -300,6 +300,23 @@
   .chip-dream { background: var(--amber-glow); border-color: rgba(245,158,11,0.3); color: var(--accent3); }
   .chip-mass { background: var(--green-glow); border-color: rgba(16,185,129,0.3); color: var(--accent4); }
   .resume-score-circle { width: 120px; height: 120px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0 auto 20px; position: relative; }
+  .resume-score-circle .score-num { font-size: 2.5rem; font-weight: 900; line-height: 1; }
+  .resume-score-circle .score-grade { font-size: 0.8rem; font-weight: 600; margin-top: 2px; }
+  .resume-score-circle .score-label { font-size: 1rem; opacity: 0.7; }
+
+  .metric-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px; text-align: center; }
+  .metric-label { font-size: 0.75rem; color: var(--muted); margin-bottom: 4px; }
+  .metric-value { font-size: 1.2rem; font-weight: 700; color: var(--text); }
+
+  .keyword-category { margin-bottom: 12px; }
+  .keyword-category-title { font-size: 0.85rem; font-weight: 600; color: var(--accent2); margin-bottom: 6px; }
+  .keyword-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .keyword-tag { background: rgba(109,40,217,0.1); color: var(--accent2); padding: 3px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 500; }
+
+  .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap: 12px; }
+  .metric-item { text-align: center; padding: 8px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+  .metric-number { font-size: 1.2rem; font-weight: 700; color: var(--accent2); display: block; }
+  .metric-label { font-size: 0.7rem; color: var(--muted); margin-top: 2px; }
   .resume-score-circle::before { content: ''; position: absolute; inset: 8px; background: var(--card); border-radius: 50%; z-index: 1; }
   .resume-score-circle .score-num { font-size: 2.2rem; font-weight: 900; letter-spacing: -0.04em; line-height: 1; position: relative; z-index: 2; }
   .resume-score-circle .score-label { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 4px; position: relative; z-index: 2; }
@@ -923,25 +940,32 @@ GROUP BY dept HAVING COUNT(*) &gt; 5;
     <div class="resume-results" id="resumeResults">
       <!-- Score Card -->
       <div class="result-glass-card" style="text-align: center;">
-        <h4>🎯 Resume Score</h4>
+        <h4>🎯 ATS Resume Score</h4>
         <div class="resume-score-circle" id="scoreCircle">
           <span class="score-num" id="scoreNum">0</span>
+          <span class="score-grade" style="font-size: 0.7rem; opacity: 0.8; display: block;">Grade</span>
           <span class="score-label">%</span>
         </div>
         <p style="color: var(--muted); font-size: 0.85rem;" id="scoreVerdict"></p>
+        <div id="scoreBreakdown"></div>
       </div>
 
-      <!-- Skills Found -->
+      <!-- Strengths -->
       <div class="result-glass-card">
-        <h4>🛠 Skills Detected</h4>
-        <div id="skillBarsContainer"></div>
+        <h4>💪 Strengths</h4>
+        <ul id="resumeStrengths" style="list-style: none; display: flex; flex-direction: column; gap: 8px;"></ul>
       </div>
 
-      <!-- Matched Companies -->
+      <!-- Keywords Found -->
       <div class="result-glass-card">
-        <h4>🏢 Matched Companies</h4>
-        <p style="font-size: 0.82rem; color: var(--muted); margin-bottom: 12px;">Based on your resume skills, these ABES-visiting companies match your profile:</p>
-        <div class="matched-companies-grid" id="matchedCompanies"></div>
+        <h4>🔍 Keywords Found</h4>
+        <div id="keywordsFound" style="display: flex; flex-direction: column; gap: 12px;"></div>
+      </div>
+
+      <!-- Resume Metrics -->
+      <div class="result-glass-card">
+        <h4>📊 Resume Metrics</h4>
+        <div id="resumeMetrics"></div>
       </div>
 
       <!-- Suggestions -->
@@ -1428,6 +1452,7 @@ GROUP BY dept HAVING COUNT(*) &gt; 5;
     }
 
     try {
+      // Extract text from PDF for display
       const arrayBuffer = await uploadedPdfFile.arrayBuffer();
       const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
       let fullText = '';
@@ -1436,147 +1461,131 @@ GROUP BY dept HAVING COUNT(*) &gt; 5;
         const content = await page.getTextContent();
         fullText += content.items.map(item => item.str).join(' ') + '\n';
       }
-
-      const textLower = fullText.toLowerCase();
       document.getElementById('extractedTextBox').textContent = fullText.trim() || 'No text could be extracted. Try a different PDF.';
 
-      // ---- Skill detection rules ----
-      const skillCategories = {
-        'Programming Languages': { keywords: ['c++','c','java','python','javascript','typescript','go','rust','kotlin','c#','php','ruby','swift'], found: [], weight: 20 },
-        'Data Structures & Algorithms': { keywords: ['dsa','data structures','algorithms','leetcode','competitive programming','sorting','searching','trees','graphs','dynamic programming','linked list','stack','queue','binary tree','bfs','dfs','backtracking','hashing'], found: [], weight: 20 },
-        'Databases & SQL': { keywords: ['sql','mysql','postgresql','mongodb','dbms','database','nosql','firebase','redis','normalization','joins','acid','transactions'], found: [], weight: 15 },
-        'Web Development': { keywords: ['html','css','react','angular','vue','node','express','django','flask','rest api','graphql','next.js','tailwind','bootstrap','frontend','backend','full stack','fullstack','web development'], found: [], weight: 10 },
-        'CS Fundamentals': { keywords: ['operating system','os','computer network','networking','tcp','http','osi','oops','object oriented','encapsulation','polymorphism','inheritance','abstraction'], found: [], weight: 15 },
-        'Tools & DevOps': { keywords: ['git','github','docker','kubernetes','aws','azure','gcp','linux','ci/cd','jenkins','terraform','cloud'], found: [], weight: 5 },
-        'Projects': { keywords: ['project','developed','built','created','implemented','designed','deployed','portfolio','github.com','live demo'], found: [], weight: 10 },
-        'Soft Skills & Extras': { keywords: ['leadership','team','collaboration','communication','volunteer','hackathon','certification','certified','workshop','internship','intern','training'], found: [], weight: 5 }
-      };
+      // Send to backend API for analysis
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('Please login to analyze your resume');
+        return;
+      }
 
-      let totalScore = 0;
-      let maxScore = 0;
+      const formData = new FormData();
+      formData.append('resume', uploadedPdfFile);
 
-      Object.keys(skillCategories).forEach(cat => {
-        const c = skillCategories[cat];
-        c.keywords.forEach(kw => {
-          if(textLower.includes(kw) && !c.found.includes(kw)) c.found.push(kw);
-        });
-        const catScore = Math.min(c.found.length / Math.max(3, c.keywords.length * 0.3), 1) * c.weight;
-        totalScore += catScore;
-        maxScore += c.weight;
+      const response = await fetch('/api/resume/analyze', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: formData
       });
 
-      const score = Math.min(Math.round((totalScore / maxScore) * 100), 100);
+      const result = await response.json();
 
-      // ---- Render Score ----
-      const scoreCircle = document.getElementById('scoreCircle');
-      const scoreColor = score >= 75 ? 'var(--accent4)' : score >= 50 ? 'var(--accent3)' : 'var(--danger)';
-      scoreCircle.style.background = `conic-gradient(${scoreColor} ${score * 3.6}deg, var(--border) 0deg)`;
-      scoreCircle.querySelector('.score-num').textContent = score;
-      scoreCircle.querySelector('.score-num').style.color = scoreColor;
+      if (!result.success) {
+        throw new Error(result.error || 'Analysis failed');
+      }
 
-      const verdicts = [
-        [90, '🏆 Outstanding! Your resume is placement-ready!'],
-        [75, '🌟 Great resume! Minor tweaks needed.'],
-        [60, '👍 Good foundation. Add more projects & skills.'],
-        [40, '⚠️ Needs work. Focus on adding DSA, projects, and CS fundamentals.'],
-        [0,  '🔴 Significant gaps. Start with core skills and projects.']
-      ];
-      document.getElementById('scoreVerdict').textContent = verdicts.find(v => score >= v[0])[1];
-
-      // ---- Render Skill Bars ----
-      const barsContainer = document.getElementById('skillBarsContainer');
-      barsContainer.innerHTML = '';
-      Object.keys(skillCategories).forEach(cat => {
-        const c = skillCategories[cat];
-        const pct = Math.round(Math.min(c.found.length / Math.max(3, c.keywords.length * 0.3), 1) * 100);
-        const barColor = pct >= 70 ? 'linear-gradient(90deg, #10b981, #06b6d4)' : pct >= 40 ? 'linear-gradient(90deg, #f59e0b, #ef4444)' : 'linear-gradient(90deg, #ef4444, #dc2626)';
-        barsContainer.innerHTML += `
-          <div class="skill-bar-container">
-            <div class="skill-bar-label">
-              <span class="skill-name">${cat}</span>
-              <span>${c.found.length > 0 ? c.found.slice(0,4).join(', ') + (c.found.length > 4 ? '...' : '') : 'None found'}</span>
-            </div>
-            <div class="skill-bar"><div class="skill-bar-fill" style="width: 0%; background: ${barColor};" data-target="${pct}"></div></div>
-          </div>`;
-      });
-      // Animate bars
-      setTimeout(() => {
-        document.querySelectorAll('.skill-bar-fill').forEach(bar => {
-          bar.style.width = bar.dataset.target + '%';
-        });
-      }, 100);
-
-      // ---- Match Companies ----
-      const companyRules = [
-        { name: 'Amazon', tier: 'super', needs: ['dsa','algorithms','data structures','system design'] },
-        { name: 'Atlassian', tier: 'super', needs: ['dsa','algorithms','system design','code review'] },
-        { name: 'Cisco', tier: 'dream', needs: ['networking','c++','c','dsa','tcp','computer network'] },
-        { name: 'Synopsys', tier: 'dream', needs: ['c++','c','oops','digital','dsa'] },
-        { name: 'Goldman Sachs', tier: 'dream', needs: ['dsa','sql','algorithms','probability'] },
-        { name: 'GroundTruth', tier: 'dream', needs: ['dsa','oops','project'] },
-        { name: 'Capgemini Exceller', tier: 'dream', needs: ['c++','java','python','pseudocode'] },
-        { name: 'HSBC / NTT Data', tier: 'dream', needs: ['sql','dbms','os'] },
-        { name: 'TCS (NQT)', tier: 'mass', needs: ['aptitude','c++','java','python','sql'] },
-        { name: 'Infosys', tier: 'mass', needs: ['aptitude','java','python','sql'] },
-        { name: 'Wipro / Cognizant', tier: 'mass', needs: ['aptitude','oops','dsa'] },
-        { name: 'Accenture / HCL', tier: 'mass', needs: ['communication','aptitude','coding'] },
-        { name: 'Tech Mahindra', tier: 'mass', needs: ['aptitude','dbms','sql'] },
-        { name: 'IBM', tier: 'mass', needs: ['coding','english','python','java'] }
-      ];
-
-      const allFoundSkills = Object.values(skillCategories).flatMap(c => c.found);
-      const matchedEl = document.getElementById('matchedCompanies');
-      matchedEl.innerHTML = '';
-      let matchCount = 0;
-      companyRules.forEach(company => {
-        const matchedKeywords = company.needs.filter(kw => allFoundSkills.some(s => s.includes(kw) || kw.includes(s)));
-        const matchPct = matchedKeywords.length / company.needs.length;
-        if(matchPct >= 0.3) {
-          matchCount++;
-          const chipClass = 'chip-' + company.tier;
-          matchedEl.innerHTML += `<div class="matched-company-chip ${chipClass}">
-            <span>${company.tier === 'super' ? '🚀' : company.tier === 'dream' ? '🏆' : '🌊'}</span>
-            ${company.name}
-            <span style="font-size:0.7rem;opacity:0.7;">${Math.round(matchPct*100)}%</span>
-          </div>`;
-        }
-      });
-      if(matchCount === 0) matchedEl.innerHTML = '<p style="color:var(--muted);font-size:0.85rem;">No strong matches found. Add more relevant skills to your resume.</p>';
-
-      // ---- Suggestions ----
-      const suggestionsEl = document.getElementById('resumeSuggestions');
-      suggestionsEl.innerHTML = '';
-      const suggestions = [];
-      if(skillCategories['Programming Languages'].found.length === 0) suggestions.push({ icon: '🔴', text: 'Add programming languages (C++, Java, Python) prominently to your resume.' });
-      if(skillCategories['Data Structures & Algorithms'].found.length < 2) suggestions.push({ icon: '🔴', text: 'Mention DSA skills explicitly — "Data Structures", "Algorithms", "LeetCode" keywords help.' });
-      if(skillCategories['Databases & SQL'].found.length === 0) suggestions.push({ icon: '🟡', text: 'Add SQL/DBMS skills — most companies ask SQL queries in interviews.' });
-      if(skillCategories['Projects'].found.length < 2) suggestions.push({ icon: '🟡', text: 'Add 2-3 projects with action verbs: "developed", "built", "implemented", "deployed".' });
-      if(skillCategories['CS Fundamentals'].found.length === 0) suggestions.push({ icon: '🟡', text: 'Mention OS, Computer Networks, OOPs concepts in your skills section.' });
-      if(skillCategories['Tools & DevOps'].found.length === 0) suggestions.push({ icon: '🟢', text: 'Add tools: Git, GitHub, Docker, Linux — they make your profile stand out.' });
-      if(skillCategories['Soft Skills & Extras'].found.length === 0) suggestions.push({ icon: '🟢', text: 'Include hackathons, certifications, internships, and leadership activities.' });
-      if(!textLower.includes('github.com')) suggestions.push({ icon: '💡', text: 'Add your GitHub profile link — recruiters check it.' });
-      if(!textLower.includes('linkedin')) suggestions.push({ icon: '💡', text: 'Add your LinkedIn profile URL to your resume header.' });
-      if(fullText.length > 3000) suggestions.push({ icon: '📏', text: 'Your resume seems long. Keep it to 1 page for freshers.' });
-      if(suggestions.length === 0) suggestions.push({ icon: '✅', text: 'Your resume looks comprehensive! Keep refining project descriptions.' });
-
-      suggestions.forEach(s => {
-        suggestionsEl.innerHTML += `<li style="background: var(--surface); border: 1px solid var(--border); padding: 10px 14px; border-radius: 10px; font-size: 0.83rem; display: flex; align-items: flex-start; gap: 8px;"><span style="flex-shrink:0;">${s.icon}</span> ${s.text}</li>`;
-      });
+      const analysis = result.analysis;
+      renderAnalysisResults(analysis);
 
       // Show results
       document.getElementById('resumeResults').classList.add('visible');
       document.getElementById('resumeResults').scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-      // ---- Save to localStorage for Admin Dashboard ----
-      saveStudentResumeData(score, skillCategories, matchCount);
-
     } catch(err) {
-      alert('Error reading PDF: ' + err.message);
+      alert('Error analyzing resume: ' + err.message);
       console.error(err);
     } finally {
       btn.disabled = false;
       btn.innerHTML = '🔬 Analyze Resume';
     }
+  }
+
+  function renderAnalysisResults(analysis) {
+    const { atsScore, breakdown, strengths, suggestions, keywords, metrics, grade } = analysis;
+
+    // Render Score Circle
+    const scoreCircle = document.getElementById('scoreCircle');
+    const scoreColor = atsScore >= 80 ? 'var(--accent4)' : atsScore >= 60 ? 'var(--accent3)' : atsScore >= 40 ? 'var(--accent2)' : 'var(--danger)';
+    scoreCircle.style.background = `conic-gradient(${scoreColor} ${atsScore * 3.6}deg, var(--border) 0deg)`;
+    scoreCircle.querySelector('.score-num').textContent = atsScore;
+    scoreCircle.querySelector('.score-num').style.color = scoreColor;
+    scoreCircle.querySelector('.score-grade').textContent = grade;
+
+    // Score Verdict
+    const verdicts = {
+      'A+': '🏆 Outstanding! Your resume is highly ATS-optimized and placement-ready!',
+      'A': '🌟 Excellent! Your resume has strong ATS compatibility with minor improvements possible.',
+      'B+': '👍 Very Good! Your resume is well-structured with good keyword presence.',
+      'B': '✅ Good! Your resume has solid foundation but needs some enhancements.',
+      'C+': '⚠️ Fair! Your resume needs significant improvements in keywords and structure.',
+      'C': '🔶 Needs Work! Focus on adding relevant skills and optimizing content.',
+      'D': '🔴 Major Gaps! Comprehensive improvements needed across all areas.'
+    };
+    document.getElementById('scoreVerdict').textContent = verdicts[grade] || 'Resume needs analysis';
+
+    // Score Breakdown
+    const breakdownHTML = `
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 12px; margin-top: 16px;">
+        <div class="metric-card"><div class="metric-label">Keywords</div><div class="metric-value">${breakdown.keywordScore}/40</div></div>
+        <div class="metric-card"><div class="metric-label">Structure</div><div class="metric-value">${breakdown.structureScore}/20</div></div>
+        <div class="metric-card"><div class="metric-label">Content</div><div class="metric-value">${breakdown.contentScore}/30</div></div>
+        <div class="metric-card"><div class="metric-label">Industry</div><div class="metric-value">${breakdown.industryScore}/10</div></div>
+      </div>
+    `;
+    document.getElementById('scoreBreakdown').innerHTML = breakdownHTML;
+
+    // Strengths
+    const strengthsEl = document.getElementById('resumeStrengths');
+    strengthsEl.innerHTML = '';
+    if (strengths.length > 0) {
+      strengths.forEach(strength => {
+        strengthsEl.innerHTML += `<li style="background: var(--surface); border: 1px solid var(--border); padding: 10px 14px; border-radius: 10px; font-size: 0.83rem; display: flex; align-items: flex-start; gap: 8px;"><span style="flex-shrink:0;">💪</span> ${strength}</li>`;
+      });
+    } else {
+      strengthsEl.innerHTML = '<p style="color:var(--muted);font-size:0.85rem;">No significant strengths identified yet.</p>';
+    }
+
+    // Suggestions
+    const suggestionsEl = document.getElementById('resumeSuggestions');
+    suggestionsEl.innerHTML = '';
+    if (suggestions.length > 0) {
+      suggestions.forEach(suggestion => {
+        const priority = suggestion.includes('Add contact') || suggestion.includes('too short') ? '🔴' :
+                        suggestion.includes('action verbs') || suggestion.includes('quantifiable') ? '🟡' : '💡';
+        suggestionsEl.innerHTML += `<li style="background: var(--surface); border: 1px solid var(--border); padding: 10px 14px; border-radius: 10px; font-size: 0.83rem; display: flex; align-items: flex-start; gap: 8px;"><span style="flex-shrink:0;">${priority}</span> ${suggestion}</li>`;
+      });
+    } else {
+      suggestionsEl.innerHTML = '<p style="color:var(--muted);font-size:0.85rem;">Your resume looks well-optimized! Keep refining project descriptions.</p>';
+    }
+
+    // Keywords Found
+    const keywordsEl = document.getElementById('keywordsFound');
+    keywordsEl.innerHTML = '';
+    Object.keys(keywords).forEach(category => {
+      if (keywords[category].length > 0) {
+        keywordsEl.innerHTML += `
+          <div class="keyword-category">
+            <div class="keyword-category-title">${category.charAt(0).toUpperCase() + category.slice(1)} Keywords</div>
+            <div class="keyword-tags">${keywords[category].map(kw => `<span class="keyword-tag">${kw}</span>`).join('')}</div>
+          </div>
+        `;
+      }
+    });
+
+    // Metrics
+    const metricsEl = document.getElementById('resumeMetrics');
+    metricsEl.innerHTML = `
+      <div class="metrics-grid">
+        <div class="metric-item"><div class="metric-number">${metrics.wordCount}</div><div class="metric-label">Words</div></div>
+        <div class="metric-item"><div class="metric-number">${metrics.pageEstimate}</div><div class="metric-label">Pages</div></div>
+        <div class="metric-item"><div class="metric-number">${metrics.actionVerbs}</div><div class="metric-label">Action Verbs</div></div>
+        <div class="metric-item"><div class="metric-number">${metrics.quantifiableAchievements}</div><div class="metric-label">Quantified Results</div></div>
+        <div class="metric-item"><div class="metric-number">${metrics.keywordMatches}</div><div class="metric-label">Keywords Found</div></div>
+      </div>
+    `;
   }
 
   // ==========================================

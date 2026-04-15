@@ -5,6 +5,9 @@ const cors = require('cors');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const path = require('path');
+const multer = require('multer');
+const pdfParse = require('pdf-parse');
+const natural = require('natural');
 
 const User = require('./models/User');
 const Organization = require('./models/Organization');
@@ -52,6 +55,161 @@ const authenticateToken = (req, res, next) => {
     next();
   });
 };
+
+// Multer configuration for file uploads
+const upload = multer({
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype === 'application/pdf' || file.mimetype === 'text/plain') {
+      cb(null, true);
+    } else {
+      cb(new Error('Only PDF and text files are allowed'));
+    }
+  }
+});
+
+// Resume Analysis Keywords and Scoring
+const ATS_KEYWORDS = {
+  technical: [
+    'javascript', 'python', 'java', 'c++', 'react', 'node.js', 'html', 'css', 'sql',
+    'git', 'docker', 'aws', 'linux', 'api', 'database', 'algorithm', 'data structure',
+    'machine learning', 'ai', 'cloud', 'devops', 'agile', 'scrum', 'testing'
+  ],
+  soft: [
+    'communication', 'teamwork', 'leadership', 'problem solving', 'analytical',
+    'time management', 'adaptability', 'creativity', 'collaboration', 'initiative'
+  ],
+  education: [
+    'bachelor', 'master', 'phd', 'degree', 'gpa', 'cgpa', 'graduation', 'university',
+    'college', 'engineering', 'computer science', 'information technology'
+  ],
+  experience: [
+    'internship', 'project', 'developed', 'implemented', 'managed', 'led',
+    'achieved', 'improved', 'created', 'designed', 'built'
+  ]
+};
+
+const INDUSTRY_KEYWORDS = {
+  software: ['software engineer', 'developer', 'programmer', 'coding', 'full stack', 'backend', 'frontend'],
+  data: ['data analyst', 'data scientist', 'machine learning', 'ai', 'statistics', 'analytics'],
+  web: ['web developer', 'ui/ux', 'frontend', 'react', 'angular', 'vue'],
+  mobile: ['mobile developer', 'ios', 'android', 'flutter', 'react native']
+};
+
+function analyzeResume(text) {
+  const lowerText = text.toLowerCase();
+  const words = text.split(/\s+/);
+  const sentences = text.split(/[.!?]+/);
+
+  // Basic structure analysis
+  const hasContact = /\b[\w\.-]+@[\w\.-]+\.\w{2,}\b|\b\d{10}\b|\b\d{3}[-.]?\d{3}[-.]?\d{4}\b/.test(text);
+  const hasSummary = /summary|objective|profile/i.test(text);
+  const hasExperience = /experience|work|employment|internship/i.test(text);
+  const hasEducation = /education|degree|university|college/i.test(text);
+  const hasSkills = /skills|technologies|tools/i.test(text);
+  const hasProjects = /projects?|portfolio/i.test(text);
+
+  // Keyword analysis
+  let keywordScore = 0;
+  let foundKeywords = { technical: [], soft: [], education: [], experience: [] };
+
+  Object.keys(ATS_KEYWORDS).forEach(category => {
+    ATS_KEYWORDS[category].forEach(keyword => {
+      if (lowerText.includes(keyword.toLowerCase())) {
+        keywordScore += 2;
+        foundKeywords[category].push(keyword);
+      }
+    });
+  });
+
+  // Industry-specific analysis
+  let industryMatch = 'general';
+  let industryScore = 0;
+  Object.keys(INDUSTRY_KEYWORDS).forEach(industry => {
+    const matches = INDUSTRY_KEYWORDS[industry].filter(kw =>
+      lowerText.includes(kw.toLowerCase())
+    ).length;
+    if (matches > industryScore) {
+      industryScore = matches;
+      industryMatch = industry;
+    }
+  });
+
+  // Length and formatting analysis
+  const wordCount = words.length;
+  const pageEstimate = Math.ceil(wordCount / 300); // Rough estimate
+  const lengthScore = wordCount > 200 && wordCount < 800 ? 20 : wordCount < 200 ? 5 : 10;
+
+  // Action verb analysis
+  const actionVerbs = ['developed', 'created', 'implemented', 'managed', 'led', 'achieved',
+                      'improved', 'designed', 'built', 'launched', 'optimized', 'increased'];
+  const actionVerbCount = actionVerbs.filter(verb => lowerText.includes(verb)).length;
+  const actionScore = Math.min(actionVerbCount * 3, 15);
+
+  // Quantifiable achievements
+  const quantifiablePatterns = [/\d+%/, /\$\d+/, /\d+ (users|customers|projects|tasks)/i];
+  const quantifiableCount = quantifiablePatterns.filter(pattern => pattern.test(text)).length;
+  const quantifiableScore = Math.min(quantifiableCount * 5, 15);
+
+  // Calculate ATS score (0-100)
+  const atsScore = Math.min(Math.round(
+    (keywordScore * 0.4) +
+    (lengthScore * 0.2) +
+    (actionScore * 0.15) +
+    (quantifiableScore * 0.15) +
+    ((hasContact && hasSummary && hasExperience && hasEducation && hasSkills) ? 10 : 5) +
+    (industryScore * 2)
+  ), 100);
+
+  // Generate suggestions
+  const suggestions = [];
+
+  if (!hasContact) suggestions.push("Add contact information (email, phone) at the top");
+  if (!hasSummary) suggestions.push("Include a professional summary/objective (2-3 sentences)");
+  if (!hasExperience) suggestions.push("Add work experience section with job descriptions");
+  if (!hasEducation) suggestions.push("Include education details with degree and institution");
+  if (!hasSkills) suggestions.push("Add a skills section with relevant technologies");
+  if (!hasProjects) suggestions.push("Include projects section to showcase practical experience");
+
+  if (keywordScore < 20) suggestions.push("Add more industry-specific keywords relevant to your target roles");
+  if (actionVerbCount < 3) suggestions.push("Use more action verbs (developed, created, implemented, managed, led)");
+  if (quantifiableCount < 2) suggestions.push("Include quantifiable achievements with numbers and percentages");
+  if (wordCount < 200) suggestions.push("Resume is too short - aim for 300-600 words");
+  if (wordCount > 800) suggestions.push("Resume is too long - keep it concise and relevant");
+
+  // Strengths
+  const strengths = [];
+  if (atsScore >= 80) strengths.push("Excellent ATS compatibility with strong keyword presence");
+  if (actionVerbCount >= 5) strengths.push("Good use of action verbs demonstrating achievements");
+  if (quantifiableCount >= 3) strengths.push("Strong quantifiable achievements showing impact");
+  if (hasContact && hasSummary && hasExperience && hasEducation && hasSkills && hasProjects) {
+    strengths.push("Complete resume structure with all essential sections");
+  }
+  if (industryScore >= 3) strengths.push(`Well-aligned with ${industryMatch} industry requirements`);
+
+  return {
+    atsScore,
+    breakdown: {
+      keywordScore: Math.min(keywordScore, 40),
+      structureScore: (hasContact && hasSummary && hasExperience && hasEducation && hasSkills) ? 20 : 10,
+      contentScore: lengthScore + actionScore + quantifiableScore,
+      industryScore: Math.min(industryScore * 2, 10)
+    },
+    strengths,
+    suggestions,
+    keywords: foundKeywords,
+    metrics: {
+      wordCount,
+      pageEstimate,
+      actionVerbs: actionVerbCount,
+      quantifiableAchievements: quantifiableCount,
+      keywordMatches: Object.values(foundKeywords).flat().length
+    },
+    industry: industryMatch,
+    grade: atsScore >= 90 ? 'A+' : atsScore >= 80 ? 'A' : atsScore >= 70 ? 'B+' :
+           atsScore >= 60 ? 'B' : atsScore >= 50 ? 'C+' : atsScore >= 40 ? 'C' : 'D'
+  };
+}
 
 const app = express();
 app.use(express.json());
@@ -380,6 +538,68 @@ app.post('/api/subscription/upgrade', authenticateToken, async (req, res) => {
     });
   } catch (err) {
     console.error('Subscription upgrade error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// ----------------------------------------
+// RESUME ANALYSIS ROUTES
+// ----------------------------------------
+
+// 10. Analyze resume
+app.post('/api/resume/analyze', authenticateToken, upload.single('resume'), async (req, res) => {
+  try {
+    let resumeText = '';
+
+    if (req.file) {
+      // Handle file upload
+      if (req.file.mimetype === 'application/pdf') {
+        const data = await pdfParse(req.file.buffer);
+        resumeText = data.text;
+      } else if (req.file.mimetype === 'text/plain') {
+        resumeText = req.file.buffer.toString('utf-8');
+      }
+    } else if (req.body.text) {
+      // Handle text input
+      resumeText = req.body.text;
+    } else {
+      return res.status(400).json({ error: 'No resume content provided' });
+    }
+
+    if (!resumeText || resumeText.trim().length < 50) {
+      return res.status(400).json({ error: 'Resume content is too short or empty' });
+    }
+
+    // Analyze the resume
+    const analysis = analyzeResume(resumeText);
+
+    // Update user's resume score in database
+    await User.findByIdAndUpdate(req.user.id, {
+      resumeScore: analysis.atsScore,
+      lastLogin: new Date()
+    });
+
+    res.json({
+      success: true,
+      analysis,
+      message: 'Resume analyzed successfully'
+    });
+
+  } catch (err) {
+    console.error('Resume analysis error:', err);
+    res.status(500).json({ error: 'Failed to analyze resume' });
+  }
+});
+
+// 11. Get user's resume analysis history
+app.get('/api/resume/history', authenticateToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select('resumeScore profile');
+    res.json({
+      currentScore: user.resumeScore || 0,
+      profile: user.profile || {}
+    });
+  } catch (err) {
     res.status(500).json({ error: 'Server error' });
   }
 });
