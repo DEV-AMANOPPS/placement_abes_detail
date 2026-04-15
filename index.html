@@ -300,8 +300,9 @@
   .chip-dream { background: var(--amber-glow); border-color: rgba(245,158,11,0.3); color: var(--accent3); }
   .chip-mass { background: var(--green-glow); border-color: rgba(16,185,129,0.3); color: var(--accent4); }
   .resume-score-circle { width: 120px; height: 120px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0 auto 20px; position: relative; }
-  .resume-score-circle .score-num { font-size: 2.2rem; font-weight: 900; letter-spacing: -0.04em; line-height: 1; }
-  .resume-score-circle .score-label { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 4px; }
+  .resume-score-circle::before { content: ''; position: absolute; inset: 8px; background: var(--card); border-radius: 50%; z-index: 1; }
+  .resume-score-circle .score-num { font-size: 2.2rem; font-weight: 900; letter-spacing: -0.04em; line-height: 1; position: relative; z-index: 2; }
+  .resume-score-circle .score-label { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 4px; position: relative; z-index: 2; }
   .extracted-text-box { background: rgba(0,0,0,0.8); border: 1px solid var(--border); border-radius: 10px; padding: 14px; max-height: 200px; overflow-y: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--muted); line-height: 1.7; white-space: pre-wrap; word-break: break-word; }
   [data-theme="light"] .extracted-text-box { background: rgba(241,245,249,0.8); }
   @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
@@ -1722,10 +1723,7 @@ GROUP BY dept HAVING COUNT(*) &gt; 5;
     localStorage.setItem('student_registry', JSON.stringify(registry));
   }
 
-  document.addEventListener("mousemove", (e) => {
-  document.body.style.setProperty('--mouse-x', e.clientX + 'px');
-  document.body.style.setProperty('--mouse-y', e.clientY + 'px');
-});
+
 </script>
 </body>
 </html>
