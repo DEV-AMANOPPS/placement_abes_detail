@@ -18,6 +18,11 @@ loginForm.addEventListener('submit', async function(e) {
   msgDiv.textContent = '';
 
   try {
+    // Check if the user is accidentally opening the file via file:// protocol
+    if (window.location.protocol === 'file:') {
+      throw new Error('You are opening the file directly. Please use http://localhost:3000/login.html instead.');
+    }
+
     const res  = await fetch('/api/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -26,7 +31,6 @@ loginForm.addEventListener('submit', async function(e) {
     const data = await res.json();
 
     if (res.ok) {
-      // Persist token and user info
       localStorage.setItem('token', data.token);
       localStorage.setItem('userData', JSON.stringify({
         name:  data.name || email.split('@')[0],
@@ -44,8 +48,11 @@ loginForm.addEventListener('submit', async function(e) {
       loginBtn.disabled = false;
     }
   } catch (err) {
+    console.error('Login Error Details:', err);
     msgDiv.className  = 'message-box error';
-    msgDiv.textContent = 'Network error. Is the server running?';
+    msgDiv.textContent = err.message.includes('opening the file directly') 
+      ? err.message 
+      : 'Network error. Is the server running on port 3000?';
     loginBtn.classList.remove('loading');
     loginBtn.disabled = false;
   }
