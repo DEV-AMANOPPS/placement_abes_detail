@@ -25,13 +25,13 @@ const JWT_SECRET = process.env.JWT_SECRET || 'secret_key_123';
 const getOrganization = async (req, res, next) => {
   try {
     const host = req.headers.host;
-    const subdomain = host.split('.')[0];
-
-    // Skip for main domain (app.placement.com) - public routes
-    if (subdomain === 'app' || subdomain === 'localhost:3000' || subdomain === '127.0.0.1:3000') {
+    
+    // Skip for localhost/development and main domain - public routes
+    if (host.includes('localhost') || host.includes('127.0.0.1') || host === 'app.placement.com') {
       return next();
     }
 
+    const subdomain = host.split('.')[0];
     const organization = await Organization.findOne({ domain: subdomain });
     if (!organization) {
       return res.status(404).json({ error: 'Organization not found' });
@@ -268,24 +268,37 @@ app.post('/api/auth/register', async (req, res) => {
       // Registering within existing organization
       organization = req.organization;
     } else {
-      // Creating new organization
-      if (!organizationName || !organizationDomain) {
-        return res.status(400).json({ error: 'Organization name and domain are required' });
-      }
+      // For localhost/development, create or use default ABES organization
+      if (req.headers.host.includes('localhost') || req.headers.host.includes('127.0.0.1')) {
+        organization = await Organization.findOne({ domain: 'abes' });
+        if (!organization) {
+          organization = new Organization({
+            name: 'ABES Engineering College',
+            domain: 'abes',
+            plan: 'free'
+          });
+          await organization.save();
+        }
+      } else {
+        // Production: require organization details
+        if (!organizationName || !organizationDomain) {
+          return res.status(400).json({ error: 'Organization name and domain are required' });
+        }
 
-      // Check if organization domain already exists
-      const existingOrg = await Organization.findOne({ domain: organizationDomain });
-      if (existingOrg) {
-        return res.status(400).json({ error: 'Organization domain already exists' });
-      }
+        // Check if organization domain already exists
+        const existingOrg = await Organization.findOne({ domain: organizationDomain });
+        if (existingOrg) {
+          return res.status(400).json({ error: 'Organization domain already exists' });
+        }
 
-      // Create new organization
-      organization = new Organization({
-        name: organizationName,
-        domain: organizationDomain,
-        plan: 'free'
-      });
-      await organization.save();
+        // Create new organization
+        organization = new Organization({
+          name: organizationName,
+          domain: organizationDomain,
+          plan: 'free'
+        });
+        await organization.save();
+      }
     }
 
     // Create user
