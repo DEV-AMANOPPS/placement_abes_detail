@@ -220,12 +220,6 @@ app.use(getOrganization); // Add organization middleware
 // Serve HTML contents
 app.use(express.static(path.join(__dirname)));
 
-// Debug middleware to log all requests
-app.use((req, res, next) => {
-  console.log(`${req.method} ${req.path}`);
-  next();
-});
-
 // ----------------------------------------
 // API ROUTES
 // ----------------------------------------
@@ -262,7 +256,7 @@ app.get('/api/stats', authenticateToken, async (req, res) => {
 // 2. Register
 app.post('/api/auth/register', async (req, res) => {
   try {
-    const { name, email, password, organizationName, organizationDomain } = req.body;
+    const { name, email, password } = req.body;
 
     // Check if user already exists
     let existingUser = await User.findOne({ email });
@@ -270,21 +264,15 @@ app.post('/api/auth/register', async (req, res) => {
       return res.status(400).json({ error: 'User already exists' });
     }
 
-    let organization;
-    if (req.organization) {
-      // Registering within existing organization
-      organization = req.organization;
-    } else {
-      // Always use or create default ABES organization
-      organization = await Organization.findOne({ domain: 'abes' });
-      if (!organization) {
-        organization = new Organization({
-          name: 'ABES Engineering College',
-          domain: 'abes',
-          plan: 'free'
-        });
-        await organization.save();
-      }
+    // Use or create a default organization for auth
+    let organization = await Organization.findOne({ domain: 'abes' });
+    if (!organization) {
+      organization = new Organization({
+        name: 'ABES Engineering College',
+        domain: 'abes',
+        plan: 'free'
+      });
+      await organization.save();
     }
 
     // Create user
@@ -296,7 +284,7 @@ app.post('/api/auth/register', async (req, res) => {
       email,
       password: hashedPassword,
       organizationId: organization._id,
-      role: req.organization ? 'user' : 'owner' // First user is owner
+      role: 'user'
     });
     await user.save();
 
